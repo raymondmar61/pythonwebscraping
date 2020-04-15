@@ -64,78 +64,35 @@ for img in soup.findAll('img'):
 		savingimage = open(savedimagefilename+".jpg","wb")
 		savingimage.write(urllib.request.urlopen(imagefilename).read())
 		savingimage.close()
-
-# #url website with pictures
-# url  = "https://innovateinfinitely.com/"
-# #download website for parsing
-# page = requests.get(url)
-# soup = bs(page.text, "html.parser")
-# #print(page) #print <Response [200]>
-# #print(soup) #print the html code
-# #locate all elements with image tag or <img>
-# imagetags = soup.findAll("img")
-# #print(imagetags) #print html code with <img>
-# #create directory for pictures
-# if not os.path.exists("pictures"):
-# 	os.makedirs("pictures")
-# #change directory to copy pictures to the changed directory
-# os.chdir("pictures")
-# #picture file name number variable
-# x = 0
-# #write images to directory
-# for eachimagetags in imagetags:
-# 	try:
-# 		url = eachimagetags["src"]
-# 		print("url "+url)
-# 		source = eachimagetags.get(url)
-# 		print("source "+source)
-# 		#if source.status_code == 200:
-# 		with open(os.path.basename(url),"wb") as picturefile:
-# 			print(x)
-# 			picturefile.write(requests.get(url).content)
-# 			picturefile.close()
-# 			x += 1
-# 	except:
-# 		pass
-
-#https://stackoverflow.com/questions/54338681/how-to-download-images-from-websites-using-beautiful-soup
-from PIL import Image
-url  = "https://innovateinfinitely.com/"
-response = requests.get(url)
-soup = bs(response.text,"html.parser")
-getimage = soup.find("img")
-getimageurl = getimage["src"]
-print(getimage) #print <img alt="Raymond Mar" src="raymondmarindex.jpg"/>
-print(getimageurl) #print raymondmarindex.jpg
-#openimage = Image.open(requests.get(getimageurl, stream=True).raw)
-#openimage.save("image.jpg")
-with open("filename","wb") as saveimage:
-	saveimage.write(requests.get(getimageurl).content)
-	saveimage.close()
-
-# website with model images
-url = 'https://www.pexels.com/search/model/'
-# download page for parsing
-page = requests.get(url)
-soup = bs(page.text, 'html.parser')
-# locate all elements with image tag
-image_tags = soup.findAll('img')
-# create directory for model images
-if not os.path.exists('models'):
-	os.makedirs('models')
-# move to new directory
-os.chdir('models')
-# image file name variable
-x = 0
-# writing images
-for image in image_tags:
+#Try except checking status code is 200
+import urllib
+from bs4 import BeautifulSoup
+websiteaddressurl = "https://innovateinfinitely.com/myphotoalbum.html"
+i = 1
+def makesoup(url):
+	thepage = urllib.request.urlopen(url)
+	soupdata = BeautifulSoup(thepage, "html.parser")
+	return soupdata
+#call function makesoup with website address url to get the html code
+soup = makesoup(websiteaddressurl)
+#get all img tags html code
+for img in soup.findAll('img'):
 	try:
-		url = image['src']
-		response = requests.get(url)
-		if response.status_code == 200:
-			with open('model-' + str(x) + '.jpg', 'wb') as f:
-				f.write(requests.get(url).content)
-				f.close()
-				x += 1
+		#print(img) #print <img alt="Selfie First Hike McNee Ranch State Park Overlooking Pacific Ocean" border="0" height="150" src="myphotoalbum/sanpedrovalleypark.jpg" width="200"/> . . . 
+		#print(img.get("src")) #print myphotoalbum/sanpedrovalleypark.jpg\n myphotoalbum/oaklandathletics2019.jpg\n  . . . 		
+		#get the html image file name and write correct Python code to download correct html file name
+		imagefilename = img.get("src")
+		imagefilename = websiteaddressurl[0:43] + "/" + imagefilename
+		print(imagefilename+" imagefilename") #print https://innovateinfinitely.com/myphotoalbum/myphotoalbum/sanpedrovalleypark.jpg imagefilename . . . 
+		#image description alt html tag is going to be the image filename savedimagefilename		
+		savedimagefilename = img.get("alt")
+		#RM:  https://kite.com/python/answers/how-to-get-the-status-code-of-a-website-using-urllib-in-python to check url status code
+		urlsrc = urllib.request.urlopen(imagefilename)
+		statuscode = urlsrc.getcode()
+		print(statuscode) #print 200
+		if statuscode == 200:
+			savingimage = open(savedimagefilename+".jpg","wb")
+			savingimage.write(urllib.request.urlopen(imagefilename).read())
+			savingimage.close()
 	except:
 		pass
