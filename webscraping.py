@@ -2,7 +2,6 @@
 import urllib
 import urllib.request
 from bs4 import BeautifulSoup
-
 webpageurl = "https://twitter.com/realDonaldTrump"
 page = urllib.request.urlopen(webpageurl)
 soup = BeautifulSoup(page,"html.parser")
@@ -19,9 +18,9 @@ print(soup.title.text) #print Donald J. Trump (@realDonaldTrump) | Twitter
 print(soup.find("p",{"class":"ProfileHeaderCard-bio u-dir"}).text) #print 45th President of the United States of America  #RM:  found the HTML code by writing the soup as a json string file and finding 45th President of the United States of America.
 #RM found the HTML code by writing the soup as a HTML string file and finding 45th President of the United States of America.
 #print(soup.find("div",{"class":"ProfileHeaderCard"})) #print <div class="ProfileHeaderCard">\n <h1 class="ProfileHeaderCard-name"> . . .
-print(soup.find("div",{"class":"ProfileHeaderCard"}).find("p").text) #45th President of the United States of America
+print(soup.find("div",{"class":"ProfileHeaderCard"}).find("p").text) #print 45th President of the United States of America
 #print(soup.find("div",{"class":"ProfileHeaderCard"}).find("p",{"class":"ProfileHeaderCard-bio u-dir"})) #print <p class="ProfileHeaderCard-bio u-dir" dir="ltr">45th President of the United States of America<img alt="🇺🇸" aria-label="Emoji: Flag of United States" class="Emoji Emoji--forText" draggable="false" src="https://abs.twimg.com/emoji/v2/72x72/1f1fa-1f1f8.png" title="Flag of United States"/></p>
-print(soup.find("div",{"class":"ProfileHeaderCard"}).find("p",{"class":"ProfileHeaderCard-bio u-dir"}).text) #45th President of the United States of America
+print(soup.find("div",{"class":"ProfileHeaderCard"}).find("p",{"class":"ProfileHeaderCard-bio u-dir"}).text) #print 45th President of the United States of America
 for alltweets in soup.findAll("p",{"class":"TweetTextSize TweetTextSize--normal js-tweet-text tweet-text"}):
 	print(alltweets.text,end="\n\n")
 	'''
@@ -30,6 +29,76 @@ for alltweets in soup.findAll("p",{"class":"TweetTextSize TweetTextSize--normal 
 	I never said the pandemic was a Hoax! Who would say such a thing? I said that the Do Nothing Democrats, together with their Mainstream Media partners, are the Hoax. They have been called out & embarrassed on this, even admitting they were wrong, but continue to spread the lie!
 	...
 	'''
+
+#Introduction to Web Scraping (Python) - Lesson 02 (Scrape Tables)
+import urllib
+import urllib.request
+from bs4 import BeautifulSoup
+def makesoup(url):
+	thepage = urllib.request.urlopen(url)
+	soupdata = BeautifulSoup(thepage,"html.parser")
+	#print the html code in a tempdelete.html file to view the html code easier
+	#filewrite = open("tempdelete.html","w")
+	#filewrite.write(str(soupdata))
+	#filewrite.close()
+	return soupdata
+soup = makesoup("https://www.basketball-reference.com/players/a/")
+#instructor started tutorial
+displayerplayer = ""
+for trhtmltagrow in soup.findAll("tr"):
+	#print(trhtmltagrow.text) #print Alaa Abdelnaby19911995F-C6-10240June 24, 1968Duke . . .
+	for tdhtmltagdata in trhtmltagrow.findAll("td"):
+		#print(tdhtmltagdata.text) #print 1991\n 1995\n F-C\n 6-10\n 240\n June 24, 1968\n Duke . . .
+		displayerplayer = displayerplayer+","+tdhtmltagdata.text
+print(displayerplayer) #print ,1991,1995,F-C,6-10,240,June 24, 1968,Duke,1969,1978,C-F,6-9,235,April 7, 1946,Iowa State, . . .
+
+#html code changed from video produced to today May 2, 2020.  I adjust the tutorial and the Python code.
+'''
+#html code of one player
+<tr><th class="left" data-append-csv="abdelal01" data-stat="player" scope="row"><a href="/players/a/abdelal01.html">Alaa Abdelnaby</a></th><td class="right" data-stat="year_min">1991</td><td class="right" data-stat="year_max">1995</td><td class="center" data-stat="pos">F-C</td><td class="right" csk="82.0" data-stat="height">6-10</td><td class="right" data-stat="weight">240</td><td class="left" csk="19680624" data-stat="birth_date"><a href="/friv/birthdays.cgi?month=6&amp;day=24">June 24, 1968</a></td><td class="left" data-stat="colleges"><a href="/friv/colleges.fcgi?college=duke">Duke</a></td></tr>
+'''
+for trhtmltagbasektballplayer in soup.findAll("tr"):
+	for thhtmltagplayername in trhtmltagbasektballplayer.findAll("th",{"data-stat":"player"}):
+		#print(thhtmltagplayername.text) #print Alaa Abdelnaby
+		displayplayerstatsoneline = ""
+	for tdhtmltagplayerstats in trhtmltagbasektballplayer.findAll("td"):
+		displayplayerstatsoneline = displayplayerstatsoneline+","+tdhtmltagplayerstats.text
+		#print(tdhtmltagplayerstats.text) #print 1991\n 1995\n F-C\n 6-10\n 240\n June 24, 1968\n Duke . . .
+	print(thhtmltagplayername.text+","+displayplayerstatsoneline[1:]) #print Alaa Abdelnaby,1991,1995,F-C,6-10,240,June 24, 1968,Duke
+#RM:  the printed output is separated by a semicolon because the Birth Date contains the comma for the year.  I also found some players with multiple colleges separated by a comma.  Create a .csv file writing the output to a .csv file.  You may separate by a tab \t.
+'''
+#html code header
+<th aria-label="Birth Date" class="poptip sort_default_asc center" data-stat="birth_date" scope="col">Birth Date</th>
+<th aria-label="colleges" class="poptip center" data-stat="colleges" scope="col">Colleges</th>
+'''
+displayheader = ""
+for thhtmltagheader in soup.findAll("th",{"class":"poptip sort_default_asc center"}):	
+	displayheader = displayheader+";"+thhtmltagheader.text
+print((displayheader+";"+soup.find("th",{"class":"poptip center"}).text)[1:]) #print Player;From;To;Pos;Ht;Wt;Birth Date,Colleges
+for trhtmltagbasektballplayer in soup.findAll("tr"):	
+	for thhtmltagplayername in trhtmltagbasektballplayer.findAll("th",{"data-stat":"player"}):
+		#print(thhtmltagplayername.text) #print Alaa Abdelnaby
+		displayplayerstatsoneline = ""
+	for tdhtmltagplayerstats in trhtmltagbasektballplayer.findAll("td"):
+		displayplayerstatsoneline = displayplayerstatsoneline+";"+tdhtmltagplayerstats.text
+		#print(tdhtmltagplayerstats.text) #print 1991\n 1995\n F-C\n 6-10\n 240\n June 24, 1968\n Duke . . .
+	if thhtmltagplayername.text == "Player":
+		pass
+	else:
+		print(thhtmltagplayername.text+";"+displayplayerstatsoneline[1:])
+'''
+Player;From;To;Pos;Ht;Wt;Birth Date,Colleges
+Alaa Abdelnaby;1991;1995;F-C;6-10;240;June 24, 1968;Duke
+Zaid Abdul-Aziz;1969;1978;C-F;6-9;235;April 7, 1946;Iowa State
+'''
+#https://stackoverflow.com/questions/56906907/trying-to-print-a-single-line-of-a-table-using-beautifulsoup-but-the-line-locat
+# for trhtmltagheader in soup.select("tr"):
+# 	print(trhtmltagheader.text.replace("\n",",").strip())
+# 	'''
+# 	,Player,From,To,Pos,Ht,Wt,Birth Date,Colleges,
+# 	Alaa Abdelnaby19911995F-C6-10240June 24, 1968Duke
+# 	Zaid Abdul-Aziz19691978C-F6-9235April 7, 1946Iowa State
+# 	'''
 
 #Intro to Web Scraping with Python and Beautiful Soup
 from urllib.request import urlopen as uRequest
