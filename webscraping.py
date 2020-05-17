@@ -365,3 +365,111 @@ print(classbranding[0])
 for eachclasscontainer in classcontainer:
 	#brand = eachclasscontainer.a.img["title"]
 	titlecontainer = eachclasscontainer.findAll("a",{"class":"item-title"})[0].text
+
+#Python Programming Tutorial - 22 - Download an Image from the Web YouTube thenewboston
+import urllib.request
+from random import randint
+def downloadimage(url, filedirectory, filename):
+	fullfilepath = filedirectory+filename+".jpg"
+	urllib.request.urlretrieve(url, fullfilepath)
+randomfilename = str(randint(10000,99999))
+print(randomfilename)
+downloadimage("https://innovateinfinitely.com/stevejobs.jpg","/home/mar/python/",randomfilename)
+
+#Python Programming Tutorial - 25 - How to Build a Web Crawler (1_3)
+#Python Programming Tutorial - 26 - How to Build a Web Crawler (2_3)
+#Python Programming Tutorial - 27 - How to Build a Web Crawler (3_3)
+#RM:  thenewboston vidoes outdated.  I added and experimented the code.
+import requests
+from bs4 import BeautifulSoup
+def labels(bloglink):
+	sourcecode = requests.get(bloglink) #connect to url and store the (html code?) results in sourcecode
+	plaintext = sourcecode.text #get the text from sourcecode
+	soupobject = BeautifulSoup(plaintext,"html.parser") #BeautifulSoup converts plaintext to a BeautifulSoup object soupobject to format plaintext.  RM:  need "html.parser" inside BeautifulSoup
+	for bloglabels in soupobject.findAll("span",{"class":"post-labels"}):
+		#print(type(bloglabels)) #print <class 'bs4.element.Tag'>
+		#print(bloglabels)
+		'''
+		<span class="post-labels">
+		Labels:
+		<a href="https://ininblog.blogspot.com/search/label/Consumer" rel="tag">Consumer</a>,
+		<a href="https://ininblog.blogspot.com/search/label/Economy" rel="tag">Economy</a>,
+		<a href="https://ininblog.blogspot.com/search/label/Information%20Age" rel="tag">Information Age</a>,
+		<a href="https://ininblog.blogspot.com/search/label/Life" rel="tag">Life</a>,
+		<a href="https://ininblog.blogspot.com/search/label/Money" rel="tag">Money</a>,
+		<a href="https://ininblog.blogspot.com/search/label/Moving%20Forward" rel="tag">Moving Forward</a>,
+		<a href="https://ininblog.blogspot.com/search/label/Responsibility" rel="tag">Responsibility</a>,
+		<a href="https://ininblog.blogspot.com/search/label/Retail" rel="tag">Retail</a>,
+		<a href="https://ininblog.blogspot.com/search/label/Throwback" rel="tag">Throwback</a>
+		</span>
+		'''
+		#print(type(bloglabels.text)) #print <class 'str'>
+		#print(bloglabels.text)
+		print(bloglabels.text.replace(",",""))
+		'''
+		Labels:
+		Consumer
+		Economy
+		Information Age
+		Life
+		Money
+		Moving Forward
+		Responsibility
+		Retail
+		Throwback
+		'''
+def tradespider(maxpages):
+	page = 1
+	while page <= maxpages:
+		url = "https://ininblog.blogspot.com/2020/0"+str(page)+"/"
+		sourcecode = requests.get(url) #connect to url and store the (html code?) results in sourcecode
+		plaintext = sourcecode.text #get the text from sourcecode
+		soupobject = BeautifulSoup(plaintext,"html.parser") #BeautifulSoup converts plaintext to a BeautifulSoup object soupobject to format plaintext.  RM:  need "html.parser" inside BeautifulSoup
+		#for link in soupobject.findAll("a",{"class":"post-title entry-title"}):
+		for link in soupobject.findAll("h3",{"class":"post-title entry-title"}):
+			#print(type(link)) #print <class 'bs4.element.Tag'>
+			#print(link)
+			'''
+			<h3 class="post-title entry-title" itemprop="name">
+			<a href="https://ininblog.blogspot.com/2020/01/throwback-blog-41-stamp.html">Throwback Blog:  $.41 Stamp</a>
+			</h3>
+			<h3 class="post-title entry-title" itemprop="name">
+			<a href="https://ininblog.blogspot.com/2020/01/top-ten-blogs-stand-test-of-time.html">Top Ten Blogs Stand The Test Of Time</a>
+			</h3>
+			'''
+			stringlink = str(link) #convert link to string		
+			hrefstringlinkend = stringlink.find(".html\">") #find the index for the end of the url link
+			hrefstringlink = stringlink[61:hrefstringlinkend+5] #slice the url or extract the url link
+			print(link.text,end="")
+			print(hrefstringlink)
+			labels(hrefstringlink)
+			'''
+			Throwback Blog:  $.41 Stamp
+			https://ininblog.blogspot.com/2020/01/throwback-blog-41-stamp.html
+			Top Ten Blogs Stand The Test Of Time
+			https://ininblog.blogspot.com/2020/01/top-ten-blogs-stand-test-of-time.html
+			'''
+		page+=1
+print(tradespider(5))
+'''
+The Reader Takes Something Away With These Pics
+https://ininblog.blogspot.com/2020/05/the-reader-takes-something-away-with.html
+
+Labels:
+Appreciation
+Championship
+Hidden Beast
+Honesty
+House
+Leisure
+Life
+Little Things
+Major League Baseball
+Music
+Old
+Pictures
+Responsibility
+Retail
+Sad
+San Francisco Giants
+'''
