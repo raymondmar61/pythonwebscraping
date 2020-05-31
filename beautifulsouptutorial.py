@@ -425,7 +425,7 @@ print(javascripttest.text) #print y u bad tho?  Website displays Look at you shi
 #20 - web scraping with python using beautiful soup _ requests (Python tutorial for beginners 2019)
 import requests
 from bs4 import BeautifulSoup
-page = requests.get("https://forecast.weather.gov/MapClick.php?lat=37.305450000000064&lon=-121.96103")
+page = requests.get("https://forecast.weather.gov/MapClick.php?lat=36.97493920000005&lon=-121.90341819999998")
 soup = BeautifulSoup(page.content, "html.parser")
 #print(soup)
 '''
