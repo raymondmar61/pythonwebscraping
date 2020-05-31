@@ -253,3 +253,260 @@ for divtagsbody in soup.findAll("div",{"class":"body"}):
 		for eachprintli in printli:
 			print(eachprintli) #print <li>Python</li>
 			print(eachprintli.text) #print Python
+
+#Tables and XML - Web scraping with Beautiful Soup 4 p.3
+import urllib.request
+from bs4 import BeautifulSoup
+#sauce is source
+sauce = urllib.request.urlopen("https://pythonprogramming.net/parsememcparseface/").read()
+soup = BeautifulSoup(sauce,"lxml")
+completetablesouptable = soup.table
+print(completetablesouptable)
+'''
+<table style="width:100%">
+<tr>
+<th>Program Name</th>
+<th>Internet Points</th>
+<th>Kittens?</th>
+</tr>
+<tr>
+<td>Python</td>
+<td>932914021</td>
+<td>Definitely</td>
+</tr>
+<tr>
+<td>Pascal</td>
+<td>532</td>
+<td>Unlikely</td>
+</tr>
+<tr>
+<td>Lisp</td>
+<td>1522</td>
+<td>Uncertain</td>
+</tr>
+<tr>
+<td>D#</td>
+<td>12</td>
+<td>Possibly</td>
+</tr>
+<tr>
+<td>Cobol</td>
+<td>3</td>
+<td>No.</td>
+</tr>
+<tr>
+<td>Fortran</td>
+<td>52124</td>
+<td>Yes.</td>
+</tr>
+<tr>
+<td>Haskell</td>
+<td>24</td>
+<td>lol.</td>
+</tr>
+</table>
+'''
+completetable = soup.find("table")
+print(completetable)
+'''
+<table style="width:100%">
+<tr>
+<th>Program Name</th>
+<th>Internet Points</th>
+<th>Kittens?</th>
+</tr>
+<tr>
+<td>Python</td>
+<td>932914021</td>
+<td>Definitely</td>
+</tr>
+<tr>
+<td>Pascal</td>
+<td>532</td>
+<td>Unlikely</td>
+</tr>
+<tr>
+<td>Lisp</td>
+<td>1522</td>
+<td>Uncertain</td>
+</tr>
+<tr>
+<td>D#</td>
+<td>12</td>
+<td>Possibly</td>
+</tr>
+<tr>
+<td>Cobol</td>
+<td>3</td>
+<td>No.</td>
+</tr>
+<tr>
+<td>Fortran</td>
+<td>52124</td>
+<td>Yes.</td>
+</tr>
+<tr>
+<td>Haskell</td>
+<td>24</td>
+<td>lol.</td>
+</tr>
+</table>
+'''
+tablerows = completetable.findAll("tr")
+for eachtr in tablerows:
+	tabledata = eachtr.findAll("td")
+	arow = [eachtabledata.text for eachtabledata in tabledata]
+	print(arow)
+	'''
+	[]
+	['Python', '932914021', 'Definitely']
+	['Pascal', '532', 'Unlikely']
+	['Lisp', '1522', 'Uncertain']
+	['D#', '12', 'Possibly']
+	['Cobol', '3', 'No.']
+	['Fortran', '52124', 'Yes.']
+	['Haskell', '24', 'lol.']
+	'''
+saucexml = urllib.request.urlopen("https://pythonprogramming.net/sitemap.xml").read()
+soup = BeautifulSoup(saucexml,"xml")
+#print(soup)
+'''
+<?xml version="1.0" encoding="utf-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+<url>
+<loc>https://pythonprogramming.net/downloads/intraQuarter.zip/</loc>
+<lastmod>2020-05-24</lastmod>
+</url>
+<url>
+<loc>https://pythonprogramming.net/downloads/knowledgeBase.db</loc>
+<lastmod>2020-05-24</lastmod>
+</url>
+<url>
+<loc>https://pythonprogramming.net/downloads/key_stats.csv</loc>
+<lastmod>2020-05-24</lastmod>
+</url>
+<url>
+<loc>https://pythonprogramming.net/downloads/style.zip</loc>
+<lastmod>2020-05-24</lastmod>
+</url>
+...
+<url>
+<loc>https://pythonprogramming.net/go/</loc>
+<lastmod>2020-05-24</lastmod>
+</url>
+<url>
+<loc>https://pythonprogramming.net/</loc>
+<lastmod>2020-05-24</lastmod>
+</url>
+</urlset>
+'''
+for url in soup.findAll("loc"):
+	print(url.text)
+	'''
+	https://pythonprogramming.net/downloads/intraQuarter.zip/
+	https://pythonprogramming.net/downloads/knowledgeBase.db
+	https://pythonprogramming.net/downloads/key_stats.csv
+	https://pythonprogramming.net/downloads/style.zip
+	...
+	https://pythonprogramming.net/qe/
+	https://pythonprogramming.net/go/
+	https://pythonprogramming.net/
+	'''
+
+#Dynamic Javascript Scraping - Web scraping with Beautiful Soup 4 p.4
+import urllib.request
+from bs4 import BeautifulSoup
+#sauce is source
+sauce = urllib.request.urlopen("https://pythonprogramming.net/parsememcparseface/")
+soup = BeautifulSoup(sauce,"lxml")
+javascripttest = soup.find("p", class_="jstest")
+print(javascripttest.text) #print y u bad tho?  Website displays Look at you shinin!
+
+#20 - web scraping with python using beautiful soup _ requests (Python tutorial for beginners 2019)
+import requests
+from bs4 import BeautifulSoup
+page = requests.get("https://forecast.weather.gov/MapClick.php?lat=37.305450000000064&lon=-121.96103")
+soup = BeautifulSoup(page.content, "html.parser")
+#print(soup)
+'''
+<!DOCTYPE html>
+
+<html class="no-js">
+<head>
+<!-- Meta -->
+<meta content="width=device-width" name="viewport"/>
+<link href="http://purl.org/dc/elements/1.1/" rel="schema.DC"/><title>National Weather Service</title><meta content="National Weather Service" name="DC.title"><meta content="NOAA National Weather Service National Weather Service" name="DC.description"/><meta content="US Department of Commerce, NOAA, National Weather Service" name="DC.creator"/><meta content="" name="DC.date.created" scheme="ISO8601"/><meta content="EN-US" name="DC.language" scheme="DCTERMS.RFC1766"/><meta content="weather, National Weather Service" name="DC.keywords"/><meta content="NOAA's National Weather Service" name="DC.publisher"/><meta content="National Weather Service" name="DC.contributor"/><meta content="http://www.weather.gov/disclaimer.php" name="DC.rights"/><meta content="General" name="rating"/><meta content="index,follow" name="robots"/>
+<!-- Icons -->
+<link href="./images/favicon.ico" rel="shortcut icon" type="image/x-icon"/>
+<!-- CSS -->
+<link href="css/bootstrap-3.2.0.min.css" rel="stylesheet"/>
+<link href="css/bootstrap-theme-3.2.0.min.css" rel="stylesheet"/>
+<link href="css/font-awesome-4.3.0.min.css" rel="stylesheet"/>
+<link href="css/ol-4.6.4.css" rel="stylesheet" type="text/css"/>
+<link href="css/mapclick.css" rel="stylesheet" type="text/css">
+'''
+weekweather = soup.find(id="seven-day-forecast-body")
+#print(weekweather)
+'''
+<div class="panel-body" id="seven-day-forecast-body">
+<div id="seven-day-forecast-container"><ul class="list-unstyled" id="seven-day-forecast-list"><li class="forecast-tombstone">
+<div class="tombstone-container">
+<p class="period-name">Tonight<br/><br/></p>
+<p><img alt="Tonight: Increasing clouds, with a low around 57. South southwest wind 9 to 14 mph becoming light and variable  in the evening. Winds could gust as high as 18 mph. " class="forecast-icon" src="newimages/medium/nbkn.png" title="Tonight: Increasing clouds, with a low around 57. South southwest wind 9 to 14 mph becoming light and variable  in the evening. Winds could gust as high as 18 mph. "/></p><p class="short-desc">Increasing<br/>Clouds</p><p class="temp temp-low">Low: 57 °F</p></div></li><li class="forecast-tombstone">
+<div class="tombstone-container">
+<p class="period-name">Sunday<br/><br/></p>
+<p><img alt="Sunday: Mostly cloudy, with a high near 75. Calm wind becoming north northwest around 6 mph in the afternoon. " class="forecast-icon" src="newimages/medium/bkn.png" title="Sunday: Mostly cloudy, with a high near 75. Calm wind becoming north northwest around 6 mph in the afternoon. "/></p><p class="short-desc">Mostly Cloudy</p><p class="temp temp-high">High: 75 °F</p></div></li><li class="forecast-tombstone">
+<div class="tombstone-container">
+<p class="period-name">Sunday<br/>Night</p>
+<p><img alt="Sunday Night: Mostly cloudy, with a low around 56. North northwest wind around 6 mph becoming calm  in the evening. " class="forecast-icon" src="newimages/medium/nbkn.png" title="Sunday Night: Mostly cloudy, with a low around 56. North northwest wind around 6 mph becoming calm  in the evening. "/></p><p class="short-desc">Mostly Cloudy</p><p class="temp temp-low">Low: 56 °F</p></div></li><li class="forecast-tombstone">
+<div class="tombstone-container">
+<p class="period-name">Monday<br/><br/></p>
+...
+'''
+#print(weekweather.findAll("li"))
+'''
+[<li class="forecast-tombstone">
+<div class="tombstone-container">
+<p class="period-name">Tonight<br/><br/></p>
+<p><img alt="Tonight: Increasing clouds, with a low around 57. South southwest wind 9 to 14 mph becoming light and variable  in the evening. Winds could gust as high as 18 mph. " class="forecast-icon" src="newimages/medium/nbkn.png" title="Tonight: Increasing clouds, with a low around 57. South southwest wind 9 to 14 mph becoming light and variable  in the evening. Winds could gust as high as 18 mph. "/></p><p class="short-desc">Increasing<br/>Clouds</p><p class="temp temp-low">Low: 57 °F</p></div></li>, <li class="forecast-tombstone">
+<div class="tombstone-container">
+<p class="period-name">Sunday<br/><br/></p>
+<p><img alt="Sunday: Mostly cloudy, with a high near 75. Calm wind becoming north northwest around 6 mph in the afternoon. " class="forecast-icon" src="newimages/medium/bkn.png" title="Sunday: Mostly cloudy, with a high near 75. Calm wind becoming north northwest around 6 mph in the afternoon. "/></p><p class="short-desc">Mostly Cloudy</p><p class="temp temp-high">High: 75 °F</p></div></li>, <li class="forecast-tombstone">
+<div class="tombstone-container">
+<p class="period-name">Sunday<br/>Night</p>
+<p><img alt="Sunday Night: Mostly cloudy, with a low around 56. North northwest wind around 6 mph becoming calm  in the evening. " class="forecast-icon" src="newimages/medium/nbkn.png" title="Sunday Night: Mostly cloudy, with a low around 56. North northwest wind around 6 mph becoming calm  in the evening. "/></p><p class="short-desc">Mostly Cloudy</p><p class="temp temp-low">Low: 56 °F</p></div></li>, <li class="forecast-tombstone">
+<div class="tombstone-container">
+<p class="period-name">Monday<br/><br/></p>
+...
+'''
+#print(weekweather.findAll(class_="tombstone-container"))
+'''
+[<div class="tombstone-container">
+<p class="period-name">Tonight<br/><br/></p>
+<p><img alt="Tonight: Increasing clouds, with a low around 57. South southwest wind 9 to 14 mph becoming light and variable  in the evening. Winds could gust as high as 18 mph. " class="forecast-icon" src="newimages/medium/nbkn.png" title="Tonight: Increasing clouds, with a low around 57. South southwest wind 9 to 14 mph becoming light and variable  in the evening. Winds could gust as high as 18 mph. "/></p><p class="short-desc">Increasing<br/>Clouds</p><p class="temp temp-low">Low: 57 °F</p></div>, <div class="tombstone-container">
+<p class="period-name">Sunday<br/><br/></p>
+<p><img alt="Sunday: Mostly cloudy, with a high near 75. Calm wind becoming north northwest around 6 mph in the afternoon. " class="forecast-icon" src="newimages/medium/bkn.png" title="Sunday: Mostly cloudy, with a high near 75. Calm wind becoming north northwest around 6 mph in the afternoon. "/></p><p class="short-desc">Mostly Cloudy</p><p class="temp temp-high">High: 75 °F</p></div>, <div class="tombstone-container">
+<p class="period-name">Sunday<br/>Night</p>
+<p><img alt="Sunday Night: Mostly cloudy, with a low around 56. North northwest wind around 6 mph becoming calm  in the evening. " class="forecast-icon" src="newimages/medium/nbkn.png" title="Sunday Night: Mostly cloudy, with a low around 56. North northwest wind around 6 mph becoming calm  in the evening. "/></p><p class="short-desc">Mostly Cloudy</p><p class="temp temp-low">Low: 56 °F</p></div>, <div class="tombstone-container">
+<p class="period-name">Monday<br/><br/></p>
+...
+'''
+dailytemperatures = weekweather.findAll(class_="tombstone-container")
+#print(type(dailytemperatures)) #print <class 'bs4.element.ResultSet'>  #RM:  It's a list.  Notice the comma after the tombstone-container
+print(dailytemperatures[0].find(class_="period-name").get_text()) #print Low: Tonight
+print(dailytemperatures[0].find(class_="short-desc").get_text()) #print IncreasingClouds
+print(dailytemperatures[0].find(class_="temp").get_text()) #print Low: 57 F
+#for eachdailytemperatures in dailytemperatures.findAll(class_="period-name"):
+#	print(eachdailytemperatures) #print AttributeError: ResultSet object has no attribute 'findAll'. You're probably treating a list of elements like a single element. Did you call find_all() when you meant to call find()?
+for eachdailytemperatures in dailytemperatures:
+	print(eachdailytemperatures.find(class_="period-name").get_text())
+	print(eachdailytemperatures.find(class_="short-desc").text)
+	print(eachdailytemperatures.find(class_="temp").get_text())
+	print(eachdailytemperatures.find(class_="period-name").get_text(),"\t",eachdailytemperatures.find(class_="short-desc").text,"\t",eachdailytemperatures.find(class_="temp").get_text()) #print Tonight 	 IncreasingClouds 	 Low: 57 °F
+	linetemperature = eachdailytemperatures.find(class_="period-name").get_text(),",",eachdailytemperatures.find(class_="short-desc").text,",",eachdailytemperatures.find(class_="temp").get_text()
+	print(linetemperature) #print ('Tonight', ',', 'IncreasingClouds', ',', 'Low: 57 °F')  #RM:  saves a tuple.
+	#Write each data point separately ending with a comma and a new line \n as a csv text file.
+	with open("csvtext.txt","a") as fileobject:
+		fileobject.write(eachdailytemperatures.find(class_="period-name").get_text()+",")
+		fileobject.write(eachdailytemperatures.find(class_="short-desc").text+",")
+		fileobject.write(eachdailytemperatures.find(class_="temp").get_text()+"\n")
