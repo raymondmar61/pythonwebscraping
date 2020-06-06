@@ -510,3 +510,81 @@ for eachdailytemperatures in dailytemperatures:
 		fileobject.write(eachdailytemperatures.find(class_="period-name").get_text()+",")
 		fileobject.write(eachdailytemperatures.find(class_="short-desc").text+",")
 		fileobject.write(eachdailytemperatures.find(class_="temp").get_text()+"\n")
+
+#Python Web Scraping with BeautifulSoup BS4 data mining
+import requests
+from bs4 import BeautifulSoup
+page = requests.get("https://www.usclimatedata.com/climate/united-states/us")
+print(page) #print <Response [200]>
+print(type(page)) #print <class 'requests.models.Response'>
+print(str(page) == "<Response [200]>") #print True
+#print(page.text) #RM:  print the webpage html
+soup = BeautifulSoup(page.text, "html.parser")
+#print(soup) #print the webpage html.  RM:  what's the difference between print(page.text) and print(soup)?  One difference is <html> and easier to read output in print(page.text).
+print(soup.title) #print <title>Climate United States - Normals and averages</title>
+print(soup.title.string) #print Climate United States - Normals and averages
+print(soup.title.text) #print Climate United States - Normals and averages
+print(soup.p) #print <p class="selection_title">Select a state by name</p>
+print(soup.p.text) #print Select a state by name
+print(soup.p.string) #print Select a state by name
+print(soup.a) #print <a class="navbar-brand" href="/" title="Temperature - Precipitation - Sunshine - Snowfall"><img alt="Temperature - Precipitation - Sunshine - Snowfall" height="34" src="/assets/images/us-climate-data.png" srcset="/assets/images/us-climate-data.png 1x, /assets/images/us-climate-data-2.png 2x" width="31"/><span class="white ml-2">U.S. Climate Data</span></a>
+print(type(soup.a)) #print <class 'bs4.element.Tag'>
+print(soup.a.title) #print None
+print(soup.a["title"]) #print Temperature - Precipitation - Sunshine - Snowfall
+print(soup.a.text) #print U.S. Climate Data
+print(soup.p) #print <p class="selection_title">Select a state by name</p>
+print(soup.p.parent) #print <div class="float-left mb-4 mt-2"><p class="selection_title">Select a state by name</p></div>
+print(soup.p.parent.prettify())
+'''
+<div class="float-left mb-4 mt-2">
+ <p class="selection_title">
+  Select a state by name
+ </p>
+</div>
+'''
+for eachlink in soup.findAll("a"):
+	print(eachlink.get("href"))
+	'''
+	...
+	/climate/united-states/us
+	/
+	/climate/united-states/us
+	/climate/alabama/united-states/3170
+	/climate/alaska/united-states/3171
+	/climate/arizona/united-states/3172
+	...
+	'''
+statelinks = []
+for getstatelinks in soup.findAll("a"):
+	stateurl = getstatelinks.get("href") #RM:  stateurl is a string
+	if ("/climate/" in stateurl) and (stateurl != "/climate/united-states/us") and (stateurl != "/climate/washington/district-of-columbia/united-states/usdc0001"):  #RM:  exclude the link '/climate/washington/district-of-columbia/united-states/usdc0001' in the main United States page
+		statelinks.append(stateurl)
+print(statelinks) #print ['/climate/alabama/united-states/3170', '/climate/alaska/united-states/3171', '/climate/arizona/united-states/3172', '/climate/arkansas/united-states/3173', '/climate/california/united-states/3174', '/climate/colorado/united-states/3175', '/climate/connecticut/united-states/3176', '/climate/delaware/united-states/3177', '/climate/district-of-columbia/united-states/3178', '/climate/florida/united-states/3179', '/climate/georgia/united-states/3180', '/climate/hawaii/united-states/3181', '/climate/idaho/united-states/3182', '/climate/illinois/united-states/3183', '/climate/indiana/united-states/3184', '/climate/iowa/united-states/3185', '/climate/kansas/united-states/3186', '/climate/kentucky/united-states/3187', '/climate/louisiana/united-states/3188', '/climate/maine/united-states/3189', '/climate/maryland/united-states/1872', '/climate/massachusetts/united-states/3191', '/climate/michigan/united-states/3192', '/climate/minnesota/united-states/3193', '/climate/mississippi/united-states/3194', '/climate/missouri/united-states/3195', '/climate/montana/united-states/919', '/climate/nebraska/united-states/3197', '/climate/nevada/united-states/3198', '/climate/new-hampshire/united-states/3199', '/climate/new-jersey/united-states/3200', '/climate/new-mexico/united-states/3201', '/climate/new-york/united-states/3202', '/climate/north-carolina/united-states/3203', '/climate/north-dakota/united-states/3204', '/climate/ohio/united-states/3205', '/climate/oklahoma/united-states/3206', '/climate/oregon/united-states/3207', '/climate/pennsylvania/united-states/3208', '/climate/puerto-rico/united-states/7335', '/climate/rhode-island/united-states/3209', '/climate/south-carolina/united-states/3210', '/climate/south-dakota/united-states/3211', '/climate/tennessee/united-states/3212', '/climate/texas/united-states/3213', '/climate/utah/united-states/3214', '/climate/vermont/united-states/3215', '/climate/virginia/united-states/3216', '/climate/washington/united-states/3217', '/climate/west-virginia/united-states/3218', '/climate/wisconsin/united-states/3219', '/climate/wyoming/united-states/3220']
+#RM:  The webpage changed.  The python code in the video doesn't work to get the average high temperatures for the last 12 months by month.  I modified the code.
+monthlytableone = soup.findAll("td",{"class":"high text-right"})
+print(type(monthlytableone)) #print <class 'bs4.element.ResultSet'>
+print(monthlytableone) #print [<td class="high text-right">42</td>, <td class="high text-right">44</td>, <td class="high text-right">53</td>, <td class="high text-right">64</td>, <td class="high text-right">75</td>, <td class="high text-right">83</td>, <td class="high text-right">87</td>, <td class="high text-right">84</td>, <td class="high text-right">78</td>, <td class="high text-right">67</td>, <td class="high text-right">55</td>, <td class="high text-right">45</td>]
+csvlist = []
+for eachmonthlytableone in monthlytableone:
+	print(eachmonthlytableone.text) #print 42\n 44\n 53\n . . . 67\n 55\n 45
+for eachstate in statelinks:
+	urlstate = "https://www.usclimatedata.com"+eachstate
+	page = requests.get(urlstate)
+	soup = BeautifulSoup(page.text, "html.parser")
+	#print(urlstate) #print https://www.usclimatedata.com/climate/alabama/united-states/3170
+	statename = soup.find("p",{"class":"selection_title"})
+	statenamehyphen = statename.text.find("-")	
+	print(statename.text[0:statenamehyphen-1]) #print Alabama
+	statename = statename.text[0:statenamehyphen-1]
+	csvlist.append(statename)
+	with open("csvtemperatures.csv","a") as fileobject:
+		fileobject.write(statename+",")
+	twelvehightemperatures = soup.findAll("td",{"class":"high text-right"})
+	for eachtwelvehightemperatures in twelvehightemperatures:
+		csvlist.append(eachtwelvehightemperatures.text)
+		with open("csvtemperatures.csv","a") as fileobject:
+			fileobject.write(eachtwelvehightemperatures.text+",")
+	#create new line for .csv
+	with open("csvtemperatures.csv","a") as fileobject:
+			fileobject.write("\n")
+print(csvlist)
