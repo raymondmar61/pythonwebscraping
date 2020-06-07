@@ -588,3 +588,63 @@ for eachstate in statelinks:
 	with open("csvtemperatures.csv","a") as fileobject:
 			fileobject.write("\n")
 print(csvlist)
+
+#Python Web Scraping with BeautifulSoup BS4 data mining
+import requests
+from bs4 import BeautifulSoup
+page = requests.get("https://en.wikipedia.org/wiki/Bill_Gates")
+#print(page) #print <Response [200]>
+#print(page.content) #print b'\n<!DOCTYPE html>\n<html class="client-nojs" lang="en" dir="ltr">\n<head>\n<meta charset="UTF-8"/>\n<title>Bill Gates - Wikipedia</title>\n<script>document.documentElement.className="client-js"; . . . 
+soup = BeautifulSoup(page.content, "html.parser")
+#print(soup) #print webpage with html tags
+# with open("printwebpagehtml.html","w", encoding="utf-8") as fileobject:
+# 	fileobject.write(str(soup))
+print(soup.h1) #print <h1 class="firstHeading" id="firstHeading" lang="en">Bill Gates</h1>
+print(soup.find("h1")) #print <h1 class="firstHeading" id="firstHeading" lang="en">Bill Gates</h1>
+print(soup.find("h1").text) #print Bill Gates
+print(soup.find("h1").string) #print Bill Gates
+print(soup.find("div")) #print <div class="noprint" id="mw-page-base"></div>
+print(soup.find("div", id="toc"))
+'''
+<div aria-labelledby="mw-toc-heading" class="toc" id="toc" role="navigation"><input class="toctogglecheckbox" id="toctogglecheckbox" role="button" style="display:none" type="checkbox"/><div class="toctitle" dir="ltr" lang="en"><h2 id="mw-toc-heading">Contents</h2><span class="toctogglespan"><label class="toctogglelabel" for="toctogglecheckbox"></label></span></div>
+<ul>
+<li class="toclevel-1 tocsection-1"><a href="#Early_life"><span class="tocnumber">1</span> <span class="toctext">Early life</span></a></li>
+...
+'''
+print(soup.find("div",{"id":"toc"}))
+'''
+<div aria-labelledby="mw-toc-heading" class="toc" id="toc" role="navigation"><input class="toctogglecheckbox" id="toctogglecheckbox" role="button" style="display:none" type="checkbox"/><div class="toctitle" dir="ltr" lang="en"><h2 id="mw-toc-heading">Contents</h2><span class="toctogglespan"><label class="toctogglelabel" for="toctogglecheckbox"></label></span></div>
+<ul>
+<li class="toclevel-1 tocsection-1"><a href="#Early_life"><span class="tocnumber">1</span> <span class="toctext">Early life</span></a></li>
+...
+'''
+print(soup.find("li", class_="toclevel-1")) #print <li class="toclevel-1 tocsection-1"><a href="#Early_life"><span class="tocnumber">1</span> <span class="toctext">Early life</span></a></li>
+print(soup.find("li",{"class":"toclevel-1"})) #print <li class="toclevel-1 tocsection-1"><a href="#Early_life"><span class="tocnumber">1</span> <span class="toctext">Early life</span></a></li>
+print(soup.findAll("li", class_="toclevel-1")) #print [<li class="toclevel-1 tocsection-1"><a href="#Early_life"><span class="tocnumber">1</span> <span class="toctext">Early life</span></a></li>, <li class="toclevel-1 tocsection-2"><a href="#Microsoft"><span class="tocnumber">2</span> <span class="toctext">Microsoft</span></a> <ul> <li class="toclevel-2 tocsection-3"><a href="#BASIC"><span class="tocnumber">2.1</span> <span class="toctext">BASIC</span></a></li> . . .
+print(soup.findAll("li",{"class":"toclevel-1"})) #print [<li class="toclevel-1 tocsection-1"><a href="#Early_life"><span class="tocnumber">1</span> <span class="toctext">Early life</span></a></li>, <li class="toclevel-1 tocsection-2"><a href="#Microsoft"><span class="tocnumber">2</span> <span class="toctext">Microsoft</span></a> <ul> <li class="toclevel-2 tocsection-3"><a href="#BASIC"><span class="tocnumber">2.1</span> <span class="toctext">BASIC</span></a></li> . . .
+print(type(soup.findAll("li",{"class":"toclevel-1"}))) #print <class 'bs4.element.ResultSet'>
+wikipediacontents = soup.findAll("li",{"class":"toclevel-1"})
+for eachwikipediacontents in wikipediacontents:
+	print(eachwikipediacontents)
+	print(eachwikipediacontents.text)
+	'''
+	<li class="toclevel-1 tocsection-1"><a href="#Early_life"><span class="tocnumber">1</span> <span class="toctext">Early life</span></a></li>
+	1 Early life
+	<li class="toclevel-1 tocsection-2"><a href="#Microsoft"><span class="tocnumber">2</span> <span class="toctext">Microsoft</span></a>
+	<ul>
+	<li class="toclevel-2 tocsection-3"><a href="#BASIC"><span class="tocnumber">2.1</span> <span class="toctext">BASIC</span></a></li>
+	<li class="toclevel-2 tocsection-4"><a href="#IBM_partnership"><span class="tocnumber">2.2</span> <span class="toctext">IBM partnership</span></a></li>
+	<li class="toclevel-2 tocsection-5"><a href="#Windows"><span class="tocnumber">2.3</span> <span class="toctext">Windows</span></a></li>
+	<li class="toclevel-2 tocsection-6"><a href="#Management_style"><span class="tocnumber">2.4</span> <span class="toctext">Management style</span></a></li>
+	<li class="toclevel-2 tocsection-7"><a href="#Antitrust_litigation"><span class="tocnumber">2.5</span> <span class="toctext">Antitrust litigation</span></a></li>
+	</ul>
+	</li>
+	2 Microsoft
+
+	2.1 BASIC
+	2.2 IBM partnership
+	2.3 Windows
+	2.4 Management style
+	2.5 Antitrust litigation
+	...
+	'''
