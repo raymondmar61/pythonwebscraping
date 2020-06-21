@@ -665,3 +665,86 @@ with open('output.csv', mode='w', newline='') as outputFile:
         currency = prices[:1]
         price = prices[1:]
         amazon_prices.writerow([title, price, currency, stars, numberRatings])
+
+# Intro To Web Scraping With Python
+import requests
+from bs4 import BeautifulSoup
+from csv import writer
+page = requests.get("https://innovateinfinitely.com/favoritequotes.html")
+soup = BeautifulSoup(page.text, "html.parser")  # initialize BeautifulSoup
+# print(soup.body)
+# print(soup.head)
+# print(soup.head.title)  #print <title>Favorite Quotes</title>
+firstdiv = soup.find("div")
+# print(firstdiv) #print my first div <div class="navigationbar">...
+alldiv = soup.findAll("div")
+# print(alldiv)
+alldivsecondindexdiv = soup.findAll("div")[2]
+print(alldivsecondindexdiv)  #print <div class="header">...
+printfirstquote = soup.find("div", {"class": "quote"})
+print(printfirstquote)  #print <div class="quote">\n The world didn't come to an end. --Linus, A Boy Name Charlie Brown\n </div>
+printfirstquotebyclass = soup.find(class_="quote")  #class is a reserve word.  An underscore is required.
+print(printfirstquotebyclass)  #print <div class="quote">\n The world didn't come to an end. --Linus, A Boy Name Charlie Brown\n</div>
+findattributes = soup.find(attrs={"type": "text/javascript"})  #json format to find an attribute
+print(findattributes) #print <script src="index.js" type="text/javascript"></script>
+htmlasalist = soup.select("p", {"class": "headerfont"}) #select returns a list
+print(htmlasalist) #print [<p class="headertitle">Favorite Quotes</p>, <p class="headerfont">Steve Jobs is quoted many times for his successes.  Some of my favorites are from his 2005 graduation speech at Stanford University.  They include the following:  (1) You can't connect the dots looking forward; you can only connect them looking backwards. So you have to trust that the dots will somehow connect in your future. You have to trust in something - your gut, destiny, life, karma, whatever. This approach has never let me down, and it has made all the difference in my life.   (2) Stay Hungry, Stay Foolish.  (3) Your work is going to fill a large part of your life, and the only way to be truly satisfied is to do what you believe is great work. And the only way to do great work is to love what you do. If you haven't found it yet, keep looking. Don't settle. As with all matters of the heart, you'll know when you find it.  (4) Have the courage to follow your heart and intuition. They somehow already know what you truly want to become. Everything else is secondary.</p>]
+print(len(htmlasalist)) #print 2
+htmlasalistnotreally = soup.select("p", {"class": "headerfont"})[0] #select returns a list which I don't want as a list
+print(htmlasalistnotreally) #print <p class="headertitle">Favorite Quotes</p>
+htmlasalistnotreally = soup.select("p", {"class": "headerfont"})[1] #select returns a list which I don't want as a list
+print(htmlasalistnotreally) #print <p class="headerfont">Steve Jobs is quoted many times for his successes.  Some of my favorites are from his 2005 graduation speech at Stanford University.  They include the following:  (1) You can't connect the dots looking forward; you can only connect them looking backwards. So you have to trust that the dots will somehow connect in your future. You have to trust in something - your gut, destiny, life, karma, whatever. This approach has never let me down, and it has made all the difference in my life.   (2) Stay Hungry, Stay Foolish.  (3) Your work is going to fill a large part of your life, and the only way to be truly satisfied is to do what you believe is great work. And the only way to do great work is to love what you do. If you haven't found it yet, keep looking. Don't settle. As with all matters of the heart, you'll know when you find it.  (4) Have the courage to follow your heart and intuition. They somehow already know what you truly want to become. Everything else is secondary.</p>
+classasadot = soup.select(".quote")
+print(classasadot) #print [<div class="quote">\n The world didn't come to an end. --Linus, A Boy Name Charlie Brown </div>, <div class="quote">He has a right to criticize, who has a heart to help.  --Abraham Lincoln</div>, <div class="quote">Game Over, Man. Game Over . . . . --Hudson, Aliens</div>, . . .
+classasadot10th = soup.select(".quote")[10]
+print(classasadot10th) #print <div class="quote">\n It is naive to believe you will always get a favorable reaction from other persons when you use [my] approaches, but the experience of most people shows that you are more likely to change attitudes this way than by not using these principles--and if you increase your successes by even a mere 10 percent, you have become 10 percent more effective as a leader than you were before--and that is your benefit.  --Dale Carnegie, How to Win Friends and Influence People</div>
+printquotesonly = soup.find(class_="quote").get_text()
+print(printquotesonly) #print The world didn't come to an end. --Linus, A Boy Name Charlie Brown
+printquotesonly = soup.find(class_="quote").text
+print(printquotesonly) #print The world didn't come to an end. --Linus, A Boy Name Charlie Brown
+for eachquote in soup.select(".quote"):  #RM:  select returns a list
+    #print(eachquote).text #error message
+    print(eachquote.text) #print The world didn't come to an end. --Linus, A Boy Name Charlie Brown . . .
+    print(eachquote.get_text()) #print The world didn't come to an end. --Linus, A Boy Name Charlie Brown . . .
+webpagebody = soup.body.contents
+#print(webpagebody) #prints the webpage's body in a list format
+webpagebodyheader = soup.body.contents[1]
+print(webpagebodyheader) #print my navigation bar starting at <div class="navigationbar">
+webpagebodyheaderthirdcontent = soup.body.contents[1].contents[1].contents[3]
+print(webpagebodyheaderthirdcontent) #print <li class="presentlinkpage"><a href="favoritequotes.html">Favorite Quotes</a></li>
+webpagebodyheaderthirdcontentnextsibling = soup.body.contents[1].contents[1].contents[3].next_sibling.next_sibling
+print(webpagebodyheaderthirdcontentnextsibling) #print <li><a href="myphotoalbum.html">My Photo Album</a></li>
+webpagebodyheaderthirdcontentfindnextsibling = soup.body.contents[1].contents[1].contents[3].find_next_sibling() #finds actual html element not a line blank
+print(webpagebodyheaderthirdcontentfindnextsibling) #print <li><a href="myphotoalbum.html">My Photo Album</a></li>
+onequote = soup.find(class_="quote").find_previous_sibling()
+print(onequote) #print None
+findaparent = soup.find(class_="footerlinks").find_parent()
+print(findaparent) #print footer <footer> . . .
+findnextquote = soup.find(class_="quote").find_next_sibling("div")
+print(findnextquote) #print <div class="quote"> He has a right to criticize, who has a heart to help.  --Abraham Lincoln</div>  #RM:  Abraham Lincoln is the second quote after The world didn't come to an end.
+print("\n")
+quotesincsv = soup.findAll("div", {"class": "quote"})
+with open("quotes.csv", "w") as csvfile:
+    csv_writer = writer(csvfile)
+    headers = ["Quote", "Person", "Title"]
+    csv_writer.writerow(headers)
+    for eachquotesincsv in quotesincsv:
+        print(eachquotesincsv) #print <div class="quote">The world didn't come to an end. --Linus, A Boy Name Charlie Brown</div><div class="quote">He has a right to criticize, who has a heart to help.  --Abraham Lincoln</div> . . .
+        print(eachquotesincsv.get_text()) #print The world didn't come to an end.  --Linus, A Boy Name Charlie Brown He has a right to criticize, who has a heart to help.  --Abraham Lincoln . . .
+        #Get the double hyphens separting quotes and person and title index position
+        doublehyphens = eachquotesincsv.get_text().find("--")
+        #Get the quote only
+        quote = eachquotesincsv.get_text()[0:doublehyphens - 2]
+        #Get the person only
+        person = eachquotesincsv.get_text()[doublehyphens + 2:]
+        #Get the comma separting the person and title
+        personcomma = person.find(",")
+        #Get the person only no quote and no title
+        persononly = person[0:personcomma]
+        #If person has no title, title is null
+        if personcomma == -1:
+            title = None
+        else:
+            title = person[personcomma + 2:]
+        print(quote, persononly, title) #print The world didn't come to an end. Linus A Boy Name Charlie Brown\n He has a right to criticize, who has a heart to help. Abraham Lincoln None
+        csv_writer.writerow([quote, persononly, title])
