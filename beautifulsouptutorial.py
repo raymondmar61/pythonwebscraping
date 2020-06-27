@@ -748,3 +748,229 @@ with open("quotes.csv", "w") as csvfile:
             title = person[personcomma + 2:]
         print(quote, persononly, title) #print The world didn't come to an end. Linus A Boy Name Charlie Brown\n He has a right to criticize, who has a heart to help. Abraham Lincoln None
         csv_writer.writerow([quote, persononly, title])
+
+# Using BeautifulSoup and Python to navigate an HTML parse tree
+# Open local html file https://www.reddit.com/r/learnpython/comments/8khg83/beautifulsoup_works_on_local_file_but_not_on_a_url/
+from urllib.request import urlopen
+from bs4 import BeautifulSoup
+localhtml = urlopen("file:///home/mar/python/localindex.html")  #RM:  Complete url from Firefox browser
+soup = BeautifulSoup(localhtml, "html.parser")
+#print(soup) #print webpage with html tags
+print(soup.p)
+'''
+<p id = "first" >
+<div > Parse me < /div >
+<div > Parse me too!< /div >
+< / p >
+'''
+print(soup.p.attrs) #print {'id': 'first'}
+print(soup.p.parent)
+'''
+<body >
+<p id = "first" >
+<div > Parse me < /div >
+<div > Parse me too!< /div >
+< / p >
+<p id = "second" > Welcome to HTML < /p >
+< / body >
+'''
+print(soup.p.contents) #print ['\n', <div>Parse me</div>, '\n', <div>Parse me too!</div>, '\n']
+print(soup.p.text) #print Parse me\n Parse me too!
+print(soup.p.div) #print <div>Parse me</div>
+print(soup.p["id"]) #print first
+localhtml = urlopen("file:///home/mar/python/localsamplewebsite.html")  #RM:  Complete url from Firefox browser
+soup = BeautifulSoup(localhtml, "html.parser")
+#print(soup.html) #print webpage with html tags
+#print(soup.prettify()) #print html webpage each tag and content one line
+#print(soup.html.head) #print <head>\n <title>Sample website</title>\n </head>
+print(soup.head) #print <head>\n <title>Sample website</title>\n </head>
+print(soup.head.parent) #print webpage with html tags
+print(soup.head.text) #print Sample website
+print(soup.html.body.p) #print <p>Let's practice <b>scraping</b> on this page</p>
+print(soup.html.body.div.p) #print <p>Below are some useful links</p>
+print(soup.html.body.div) #print the first div containing the <p>Below are some useful links</p>
+print(soup.html.body.div.span) #print None because the first soup.html.body.div is the first div Below are some useful links.
+print(soup.span) #print <span style="color:red">This page is for demo only</span>
+print(soup.span.parent.attrs) #print {'class': ['warning']}
+print(type(soup.span.parent.attrs)) #print <class 'dict'>
+print(soup.span.attrs) #print {'style': 'color:red'}
+print(soup.span.text) #print This page is for demo only
+print(soup.ul.li) #print <li><a href="anaconda.com/distribution/" title="Anaconda Distribution">Anaconda Distribution</a></li>
+print(soup.ul.li.next_sibling) #print null #RM:  I don't know why single next_sibling is null
+print(soup.ul.li.next_sibling.next_sibling) #print <li><a href="learnpython.org" title="Learn Python">Learn Python Basics</a></li>
+print(soup.ul.contents) #print ['\n', <li><a href="anaconda.com/distribution/" title="Anaconda Distribution">Anaconda Distribution</a></li>, '\n', <li><a href="learnpython.org" title="Learn Python">Learn Python Basics</a></li>, '\n', <li><a href="simplehtmlguide.com/cheatsheet.php">HTML cheat sheet</a></li>, '\n']
+print(soup.table) #print table and its html tags
+print(soup.table.parent) #print table and its html tags and its div tag parent
+print(soup.find("div", {"class": "sample_table"})) #print table and its html tags and its div tag parent
+for child in soup.table.children:
+    print(child)
+for child in soup.table.contents:
+    print(child)
+# for child in soup.table:
+#     for eachchild in child:
+#         print(eachchild.text) #print AttributeError: 'str' object has no attribute 'text'
+eachrow = soup.table
+print(eachrow.find("tr").find("th")) #print <th>Tag</th>
+print(eachrow.find("tr").find("th").text) #print Tag
+eachhtmltag = soup.table
+print(eachhtmltag.find("tr").find("td")) #print None  #RM:  reason none is the first tr contains a <th>, not a <td>
+print(eachhtmltag.findAll("tr")) #print [<tr><th>Tag</th><th>Description</th></tr>, <tr><td>p</td><td>Paragraph</td></tr>, <tr><td>b</td><td>Bold</td></tr>, <tr><td>i</td><td>Italic</td></tr>, <tr><td>br</td><td>Line Break</td></tr>]
+#print(eachhtmltag.findAll("tr").find("td")) #print AttributeError: ResultSet object has no attribute 'find'. You're probably treating a list of elements like a single element. Did you call find_all() when you meant to call find()?
+for eachhtmltagin in eachhtmltag.findAll("tr"):
+    print(eachhtmltagin)
+'''
+<tr><th>Tag</th><th>Description</th></tr>
+<tr><td>p</td><td>Paragraph</td></tr>
+<tr><td>b</td><td>Bold</td></tr>
+<tr><td>i</td><td>Italic</td></tr>
+<tr><td>br</td><td>Line Break</td></tr>
+'''
+for eachhtmltagin in eachhtmltag.findAll("tr"):
+    print(eachhtmltagin.findAll("td"))
+    '''
+    []
+	[<td>p</td>, <td>Paragraph</td>]
+	[<td>b</td>, <td>Bold</td>]
+	[<td>i</td>, <td>Italic</td>]
+	[<td>br</td>, <td>Line Break</td>]
+	'''
+# for eachhtmltagin in eachhtmltag.findAll("tr"):
+#     print(eachhtmltagin.findAll("td").text) #print AttributeError: ResultSet object has no attribute 'text'. You're probably treating a list of elements like a single element. Did you call find_all() when you meant to call find()?
+for eachhtmltagin in eachhtmltag.findAll("tr"):
+    for eachtext in eachhtmltagin.findAll("td"):
+        print(eachtext.text)
+        '''
+        p
+		Paragraph
+		b
+		Bold
+		i
+		Italic
+		br
+		Line Break
+		'''
+
+# BeautifulSoup find-- and find-all-- methods
+# Open local html file https://www.reddit.com/r/learnpython/comments/8khg83/beautifulsoup_works_on_local_file_but_not_on_a_url/
+from urllib.request import urlopen
+from bs4 import BeautifulSoup
+
+localhtml = urlopen("file:///home/mar/python/localindex.html")  #RM:  Complete url from Firefox browser
+soup = BeautifulSoup(localhtml, "html.parser")
+print(soup) #print webpage with html tags
+print(soup.find("p", {"id": "second"})) #print <p id="second">Welcome to HTML</p>
+print(soup.findAll("p", {"id": "second"})) #print [<p id="second">Welcome to HTML</p>]
+print(soup.findAll("p")) #print [<p id="first"><div>Parse me</div><div>Parse me too!</div></p>, <p id="second">Welcome to HTML</p>]
+print(soup.findAll("p")[1]) #print <p id="second">Welcome to HTML</p>
+for iteratefindall in soup.findAll("p"):
+    print(iteratefindall)
+    '''
+    <p id="first">
+	<div>Parse me</div>
+	<div>Parse me too!</div>
+	</p>
+	<p id="second">Welcome to HTML</p>
+	'''
+print(soup.find("div")) #print <div>Parse me</div>
+print(soup.find("ul"))
+'''
+<ul>
+<li>A</li>
+<li>B</li>
+</ul>
+'''
+print(soup.find("li")) #print <li>A</li>
+print(soup.find("li").text) #print A
+print(soup.find("div", {"class": "second"}))
+'''
+<div class="second" id="numbers">
+<ul>
+<li>1</li>
+<li>2</li>
+</ul>
+</div>
+'''
+print(soup.find("div", {"id": "numbers"}))
+'''
+<div class="second" id="numbers">
+<ul>
+<li>1</li>
+<li>2</li>
+</ul>
+</div>
+'''
+print(soup.find("div", {"class": "end"}))
+'''
+<div class="third end" id="numbers">
+<ul>
+<li>101</li>
+<li>102</li>
+</ul>
+</div>
+'''
+print(soup.findAll("div"))
+'''
+[<div>Parse me</div>, <div>Parse me too!</div>, <div class="first" id="some letters">
+<ul>
+<li>A</li>
+<li>B</li>
+</ul>
+</div>, <div class="second" id="numbers">
+<ul>
+<li>1</li>
+<li>2</li>
+</ul>
+</div>, <div class="third end" id="numbers">
+<ul>
+<li>101</li>
+<li>102</li>
+</ul>
+</div>]
+'''
+print(soup.findAll("ul"))
+'''
+[<ul>
+<li>A</li>
+<li>B</li>
+</ul>, <ul>
+<li>1</li>
+<li>2</li>
+</ul>, <ul>
+<li>101</li>
+<li>102</li>
+</ul>]
+'''
+print(soup.findAll("li")) #print [<li>A</li>, <li>B</li>, <li>1</li>, <li>2</li>, <li>101</li>, <li>102</li>]
+print(soup.findAll("div", {"id": "numbers"}))
+'''
+[<div class="second" id="numbers">
+<ul>
+<li>1</li>
+<li>2</li>
+</ul>
+</div>, <div class="third end" id="numbers">
+<ul>
+<li>101</li>
+<li>102</li>
+</ul>
+</div>]
+'''
+alllitags = soup.findAll("li")
+print(alllitags[2]) #print <li>1</li>
+for eachalllitags in alllitags:
+    print(eachalllitags)
+    print(eachalllitags.text)
+    '''
+    <li>A</li>
+	A
+	<li>B</li>
+	B
+	<li>1</li>
+	1
+	<li>2</li>
+	2
+	<li>101</li>
+	101
+	<li>102</li>
+	102
+	'''
