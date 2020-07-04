@@ -854,7 +854,6 @@ for eachhtmltagin in eachhtmltag.findAll("tr"):
 # Open local html file https://www.reddit.com/r/learnpython/comments/8khg83/beautifulsoup_works_on_local_file_but_not_on_a_url/
 from urllib.request import urlopen
 from bs4 import BeautifulSoup
-
 localhtml = urlopen("file:///home/mar/python/localindex.html")  #RM:  Complete url from Firefox browser
 soup = BeautifulSoup(localhtml, "html.parser")
 print(soup) #print webpage with html tags
@@ -974,3 +973,70 @@ for eachalllitags in alllitags:
 	<li>102</li>
 	102
 	'''
+# Juan S Vasquez Web Scraping with BeautifulSoup - Yelp-s API PyData LA 2019
+import requests as r
+from bs4 import BeautifulSoup
+import pandas as pd
+
+legal = "https://www.yellowpages.com/los-angeles-ca/legal?page="
+pages = range(1, 3)  #RM:  There are 102 pages.
+businesslist = []
+for page in pages:
+    legalurl = f"{legal}{page}"
+    businesslist.append(legalurl)
+name = []
+phone = []
+address = []
+localitycityzip = []
+categories = []
+for page in businesslist:
+    print(page)
+    url = r.get(page)
+    htmldoc = url.text
+    soup = BeautifulSoup(htmldoc, "html.parser")
+    organiclistings = soup.findAll("div", {"class": "info"})
+    for i in organiclistings:
+        if i.find("h2", {"class": "n"}):
+            name.append(i.find("h2", {"class": "n"}).text)
+        else:
+            name.append("No name")
+        if i.find("div", {"class": "phones phone primary"}):
+            phone.append(i.find("div", {"class": "phones phone primary"}).text)
+        else:
+            phone.append("No phone")
+        if i.find("div", {"class": "street-address"}):
+            address.append(i.find("div", {"class": "street-address"}).text)
+        else:
+            address.append("No address")
+        if i.find("div", {"class": "localitycityzip"}):
+            localitycityzip.append(i.find("div", {"class": "localitycityzip"}).text)
+        else:
+            localitycityzip.append("No localitycityzip")
+        if i.find("div", {"class": "categories"}):
+            categories.append(i.find("div", {"class": "categories"}).text)
+        else:
+            categories.append("No categories")
+print(name, phone, address, localitycityzip, categories)
+'''
+['1. Legal', '2. Law Office Of Michael Rose', '3. Community Driving & Traffic', '4. Your Way Out Bail Bonds', '5. Bad Boys Bail Bonds', "6. Bull's Eye Financial Professionals", '7. Younessi Law', '8. C and M Injury Lawyers', '9. Mann Jeff Law Offices Of', '10. Law Office of Richard Cherry', '11. Ropers Majeski Kohn & Bentley', '12. Law Offices of Gerald L. Marcus', '13. Anderson  Bradshaw Tax Consultants', '14. Direct Legal Support Inc', '15. Schwartz Link K A Law Corporation', '16. National Family Solutions', '17. Law Office Of M Lynda Sheridan', '18. Smyth & Smyth Law Office', '19. Tax Relief Pros', '20. Law Offices of Drasin Yee & Santiago', '21. Lewis B. Sternfels', '22. Gray Humberto R', '23. Citywide Law Group', '24. Skinner III Lemoine', '25. Financial Counseling Center', '26. Jones Eric L Law Offices', '27. The Dominguez Firm', '28. Law Offices of Paul R. Hammons', '29. Doreen A Emenike Los Angeles Immigration Lawyer', '30. Los Angeles Bail Bonds', 'AdLegal Aid Legal Services Corp', 'AdKids Zone Visitation Services', '31. Anyanwu Chima Law Offices', '32. Law Offices of Richard Fleg', '33. Law Offices Of James T. Hudson', '34. Discovery Economics', '35. Davis Wright Tremaine LLP', '36. Child Support Survival Services', '37. BET Tzedek Legal Services', '38. Sidley Austin LLP', '39. Alliance Solution Network', '40. Greenberg Glusker, LLP.', '41. Palma Javier', '42. First Legal Service', '43. Home Owner Assoc', '44. Gallo LLP', '45. Decision Analysis', '46. F F and R Attorney', '47. Dui attorney Los Angeles', '48. Justicia Hispana', '49. Centro De Dolucion Legal', "50. Silva's Legal Service", '51. Centro De Dolucion Legal', '52. Ayuda Legal En General', '53. International College-English', '54. Tech Of US', '55. Wise Law Clinic', '56. First Legal Support Service', '57. Legal Aid Bankruptcy Clinic', '58. Angel De La Comunidad', '59. Proteccion Legal Femenina', '60. Hermandad Mexicana Legal Centers'] ['(424) 298-8420', '(310) 337-1600', '(323) 222-3333', '(626) 291-2002', '(213) 262-1503', '(213) 660-3164', '(424) 325-6681', '(310) 880-4555', '(213) 480-1902', '(323) 873-2779', '(213) 262-6826', '(323) 872-0041', '(844) 446-9432', '(213) 454-0747', '(310) 553-5465', '(833) 489-6958', '(310) 286-7211', '(323) 847-2951', '(424) 388-1144', '(424) 389-0822', '(424) 835-5189', '(310) 447-6577', '(424) 248-2700', '(310) 208-8282', '(323) 954-4330', '(213) 738-7838', '(213) 388-7788', '(310) 348-4900', '(626) 256-8500', '(818) 512-1203', 'No phone', 'No phone', '(213) 385-8288', '(310) 572-6250', '(213) 224-9448', '(213) 621-7780', '(213) 633-6800', '(310) 472-0666', '(213) 384-3243', '(310) 284-6618', '(213) 387-2120', '(310) 553-3610', '(213) 427-0273', '(323) 937-0380', '(310) 472-7372', '(213) 516-8050', '(310) 979-0999', '(310) 439-1082', '(310) 889-0945', '(213) 674-8848', '(213) 382-3085', '(213) 483-0165', '(213) 382-3085', '(213) 382-8282', '(800) 433-3243', '(310) 878-7972', '(310) 734-7129', '(424) 201-4747', '(424) 270-3026', '(213) 381-5939', '(323) 721-9882', '(213) 745-5222'] ['2476 Overland Ave', '8929 S Sepulveda Blvd', '726 S Atlantic Blvd', '1547 W Martin Luther King Jr Blvd', '412 Bauchet St', '355 S Grand Ave Ste 2450', '3435 Wilshire Blvd', '12121 Wilshire Blvd Ste 103', '3600 Wilshire Blvd', '3055 Wilshire Blvd Ste 820', '445 S Figueroa St Ste 3000', '11500 W Olympic Blvd Ste 400', '7080 Hollywood Blvd', '1541 Wilshire Blvd Ste 550', '1801 Century Park E Ste E', '1999 Ave of the Stars', '1801 Century Park E', '4929 Wilshire Blvd', '1605 W Olympic Blvd', '3415 S Sepulveda Blvd Ste 440', '3100 Inglewood Blvd', '11726 San Vicente Blvd', '12424 Wilshire Blvd Ste 705', '10940 Wilshire Blvd', '4311 Wilshire Blvd Ste 602', '3580 Wilshire Blvd Ste 1798a', '3250 Wilshire Boulevard, Suite 2200', '8616 La Tijera Blvd Ste 505', '5055 Wilshire Blvd Ste 740', '108 S Spring St', 'No address', 'No address', '3540 Wilshire Blvd Ste 1200', '11600 Washington Pl', '3550 Wilshire Boulevard Suite 2000', '350 S Grand Ave Ste 2200', '865 S Figueroa St Ste 2400', '11901 Santa Monica Blvd Ste #323', '3435 Wilshire Blvd Ste 470', '1999 Avenue Of The Stars', '3540 Wilshire Blvd Ste 824', '2049 Century Park E Ste 2600', '1605 W Olympic Blvd Ste 9045', '5157 W Adams Blvd', '420 S Barrington Ave', '801 S Figueroa St Ste 2170', '10951 W Pico Blvd Ste 203', '12209 Culver Blvd', '333 S Hope St', '2033 W 7th St', '1113 Venice Blvd', '2502 W Sunset Blvd', '2253 W Pico Blvd', '3156 Wilshire Blvd', '3345 Wilshire Blvd Ste 1106', '603 S Cochran Ave', '1801 Century Park E', '511 N Beverly Glen Blvd', '3315 Glendale Blvd Ste 5', '3055 Wilshire Blvd Ste 1100', '5300 E Beverly Blvd Ste A', '210 W Adams Blvd'] ['No localitycityzip', 'No localitycityzip', 'No localitycityzip', 'No localitycityzip', 'No localitycityzip', 'No localitycityzip', 'No localitycityzip', 'No localitycityzip', 'No localitycityzip', 'No localitycityzip', 'No localitycityzip', 'No localitycityzip', 'No localitycityzip', 'No localitycityzip', 'No localitycityzip', 'No localitycityzip', 'No localitycityzip', 'No localitycityzip', 'No localitycityzip', 'No localitycityzip', 'No localitycityzip', 'No localitycityzip', 'No localitycityzip', 'No localitycityzip', 'No localitycityzip', 'No localitycityzip', 'No localitycityzip', 'No localitycityzip', 'No localitycityzip', 'No localitycityzip', 'No localitycityzip', 'No localitycityzip', 'No localitycityzip', 'No localitycityzip', 'No localitycityzip', 'No localitycityzip', 'No localitycityzip', 'No localitycityzip', 'No localitycityzip', 'No localitycityzip', 'No localitycityzip', 'No localitycityzip', 'No localitycityzip', 'No localitycityzip', 'No localitycityzip', 'No localitycityzip', 'No localitycityzip', 'No localitycityzip', 'No localitycityzip', 'No localitycityzip', 'No localitycityzip', 'No localitycityzip', 'No localitycityzip', 'No localitycityzip', 'No localitycityzip', 'No localitycityzip', 'No localitycityzip', 'No localitycityzip', 'No localitycityzip', 'No localitycityzip', 'No localitycityzip', 'No localitycityzip'] ['No categories', 'Legal ClinicsAttorneysFamily Law Attorneys', 'Internet Marketing & AdvertisingTraffic SchoolsDriving Instruction', 'Financial ServicesBail Bond Referral ServiceBail Bonds', 'Bail Bond Referral ServiceBail Bonds', 'Tax AttorneysAdministrative & Governmental Law AttorneysAttorneys', 'AttorneysConstruction Law AttorneysEmployment Discrimination Attorneys', 'AttorneysPersonal Injury Law Attorneys', 'Business Law AttorneysConstruction Law AttorneysAttorneys', 'Family Law AttorneysDivorce AttorneysPersonal Injury Law Attorneys', 'Corporation & Partnership Law AttorneysConstruction Law AttorneysAttorneys', 'Transportation Law AttorneysAttorneysPersonal Injury Law Attorneys', 'Administrative & Governmental Law AttorneysAttorneysAccounting Services', 'Printing ServicesLegal Service PlansCopying & Duplicating Service', 'Attorneys', 'AttorneysChild Custody AttorneysFamily Law Attorneys', 'Child Custody AttorneysAttorneysFamily Law Attorneys', 'General Practice AttorneysAttorneysEstate Planning, Probate, & Living Trusts', 'AttorneysAdministrative & Governmental Law AttorneysTax Attorneys', 'AttorneysLabor & Employment Law AttorneysEmployee Benefits & Worker Compensation Attorneys', 'AttorneysTrademark Agents & ConsultantsPersonal Property Law Attorneys', 'AttorneysImmigration Law AttorneysImmigration & Naturalization Consultants', 'Real Estate AttorneysAttorneysAutomobile Accident Attorneys', 'Attorneys', 'Credit & Debt CounselingBankruptcy ServicesCredit Repair Service', 'General Practice AttorneysAttorneysCorporation & Partnership Law Attorneys', 'Legal Service PlansTransportation Law AttorneysAttorneys', 'AttorneysFinancial ServicesAccounting Services', 'Immigration Law AttorneysAttorneysImmigration & Naturalization Consultants', 'Bail BondsBail Bond Referral Service', 'Legal ClinicsParalegalsDivorce AttorneysChild Custody Attorneys', 'Legal ClinicsChild Custody AttorneysFamily Law AttorneysAttorneys', 'AttorneysBankruptcy Law AttorneysCriminal Law Attorneys', 'Transportation Law AttorneysAttorneysProduct Liability Law Attorneys', 'AttorneysGeneral Practice Attorneys', 'Legal ClinicsAttorneysGeneral Practice Attorneys', 'Legal ClinicsAttorneys', 'Legal Clinics', 'Legal ClinicsAttorneysGeneral Practice Attorneys', 'Legal ClinicsAttorneysLegal Service Plans', 'Legal ClinicsAttorneysGeneral Practice Attorneys', 'Legal ClinicsGeneral Practice AttorneysAttorneys', 'Legal ClinicsLegal Service PlansBankruptcy Law Attorneys', 'Legal ClinicsLegal Service Plans', 'Legal ClinicsLegal Service PlansSocial Service Organizations', 'Legal ClinicsAttorneys', 'Legal ClinicsAttorneys', 'Legal ClinicsAttorneys', 'Legal Clinics', 'Legal Clinics', 'Legal Clinics', 'Legal Clinics', 'Legal Clinics', 'Legal Clinics', 'Legal Clinics', 'Legal Clinics', 'Legal ClinicsAttorneys Referral & Information Service', 'Legal Clinics', 'Legal Clinics', 'Legal Clinics', 'Legal ClinicsAttorneysLegal Service Plans', 'Legal ClinicsAttorneysAttorneys Referral & Information Service']
+'''
+
+#Web Scraping with requests- Beautiful Soup - Yelp-s API （01252020)
+import yelpcredentials as yc
+import requests as r
+import numpy as np
+import pandas as pd
+from itertools import product
+from bs4 import BeautifulSoup
+getyelp = "https://api.yelp.com/v3/businesses/search"
+keyyelp = yc.key
+headeryelp = {"Authorization": "Bearer %s" % keyyelp}
+#https://www.yelp.com/developers/documentation/v3/business_search website search parameters documentation
+parameters = {"location": "1200 West 7th Street, Los Angeles Ca 90017", "limit": 3, "term": "free wifi", "radius": 805}
+response = r.get(getyelp, headers=headeryelp, params=parameters)
+data = response.json()
+print(data)
+'''
+{'businesses': [{'id': 'hERxbudMM_AjSfrDiaMowA', 'alias': 'fairgrounds-coffee-and-tea-los-angeles-4', 'name': 'Fairgrounds Coffee and Tea', 'image_url': 'https://s3-media2.fl.yelpcdn.com/bphoto/ZkUehuQR9xSIVEev4NuOlA/o.jpg', 'is_closed': False, 'url': 'https://www.yelp.com/biz/fairgrounds-coffee-and-tea-los-angeles-4?adjust_creative=4tJ3rKmvMI-m3JN0U29LHQ&utm_campaign=yelp_api_v3&utm_medium=api_v3_business_search&utm_source=4tJ3rKmvMI-m3JN0U29LHQ', 'review_count': 71, 'categories': [{'alias': 'coffee', 'title': 'Coffee & Tea'}], 'rating': 4.0, 'coordinates': {'latitude': 34.05181, 'longitude': -118.26785}, 'transactions': ['delivery'], 'price': '$$', 'location': {'address1': '1256 W 7th St', 'address2': None, 'address3': '', 'city': 'Los Angeles', 'zip_code': '90017', 'country': 'US', 'state': 'CA', 'display_address': ['1256 W 7th St', 'Los Angeles, CA 90017']}, 'phone': '+12133780382', 'display_phone': '(213) 378-0382', 'distance': 186.90388849037126}, {'id': 'Aohc9uWSAxILFev2TwiMVQ', 'alias': 'philz-coffee-los-angeles-15', 'name': 'Philz Coffee', 'image_url': 'https://s3-media3.fl.yelpcdn.com/bphoto/WRXaHT4T2tjp3QaO2kjtlA/o.jpg', 'is_closed': False, 'url': 'https://www.yelp.com/biz/philz-coffee-los-angeles-15?adjust_creative=4tJ3rKmvMI-m3JN0U29LHQ&utm_campaign=yelp_api_v3&utm_medium=api_v3_business_search&utm_source=4tJ3rKmvMI-m3JN0U29LHQ', 'review_count': 936, 'categories': [{'alias': 'coffee', 'title': 'Coffee & Tea'}, {'alias': 'breakfast_brunch', 'title': 'Breakfast & Brunch'}], 'rating': 4.5, 'coordinates': {'latitude': 34.0465343, 'longitude': -118.2592814}, 'transactions': [], 'price': '$', 'location': {'address1': '801 S Hope St', 'address2': 'Unit A', 'address3': '', 'city': 'Los Angeles', 'zip_code': '90017', 'country': 'US', 'state': 'CA', 'display_address': ['801 S Hope St', 'Unit A', 'Los Angeles, CA 90017']}, 'phone': '+12132132616', 'display_phone': '(213) 213-2616', 'distance': 781.6319481961642}, {'id': 'ABr1g2u9p-H-coNgwpHkUg', 'alias': 'brasil-kiss-coffeebar-los-angeles-3', 'name': 'Brasil Kiss Coffeebar', 'image_url': 'https://s3-media1.fl.yelpcdn.com/bphoto/PGq_K4CA1pBHNf6Vmo8C8A/o.jpg', 'is_closed': False, 'url': 'https://www.yelp.com/biz/brasil-kiss-coffeebar-los-angeles-3?adjust_creative=4tJ3rKmvMI-m3JN0U29LHQ&utm_campaign=yelp_api_v3&utm_medium=api_v3_business_search&utm_source=4tJ3rKmvMI-m3JN0U29LHQ', 'review_count': 252, 'categories': [{'alias': 'coffee', 'title': 'Coffee & Tea'}, {'alias': 'brazilian', 'title': 'Brazilian'}, {'alias': 'breakfast_brunch', 'title': 'Breakfast & Brunch'}], 'rating': 4.0, 'coordinates': {'latitude': 34.0519690715975, 'longitude': -118.262663157451}, 'transactions': ['delivery', 'pickup'], 'price': '$$', 'location': {'address1': '1010 Wilshire Blvd', 'address2': None, 'address3': '', 'city': 'Los Angeles', 'zip_code': '90017', 'country': 'US', 'state': 'CA', 'display_address': ['1010 Wilshire Blvd', 'Los Angeles, CA 90017']}, 'phone': '+12137855131', 'display_phone': '(213) 785-5131', 'distance': 297.22449992187734}], 'total': 38, 'region': {'center': {'longitude': -118.26576232910156, 'latitude': 34.051226417953856}}}
+RM:  38 is the total results if there's no limit.
+'''
