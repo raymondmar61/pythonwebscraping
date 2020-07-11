@@ -976,8 +976,6 @@ for eachalllitags in alllitags:
 # Juan S Vasquez Web Scraping with BeautifulSoup - Yelp-s API PyData LA 2019
 import requests as r
 from bs4 import BeautifulSoup
-import pandas as pd
-
 legal = "https://www.yellowpages.com/los-angeles-ca/legal?page="
 pages = range(1, 3)  #RM:  There are 102 pages.
 businesslist = []
@@ -1024,19 +1022,102 @@ print(name, phone, address, localitycityzip, categories)
 #Web Scraping with requests- Beautiful Soup - Yelp-s API （01252020)
 import yelpcredentials as yc
 import requests as r
-import numpy as np
 import pandas as pd
-from itertools import product
-from bs4 import BeautifulSoup
 getyelp = "https://api.yelp.com/v3/businesses/search"
 keyyelp = yc.key
 headeryelp = {"Authorization": "Bearer %s" % keyyelp}
 #https://www.yelp.com/developers/documentation/v3/business_search website search parameters documentation
-parameters = {"location": "1200 West 7th Street, Los Angeles Ca 90017", "limit": 3, "term": "free wifi", "radius": 805}
+limitnumber = 50
+parameters = {"location": "1200 West 7th Street, Los Angeles Ca 90017", "limit": limitnumber, "term": "free wifi", "radius": 805}
 response = r.get(getyelp, headers=headeryelp, params=parameters)
 data = response.json()
-print(data)
+#print(data)
 '''
-{'businesses': [{'id': 'hERxbudMM_AjSfrDiaMowA', 'alias': 'fairgrounds-coffee-and-tea-los-angeles-4', 'name': 'Fairgrounds Coffee and Tea', 'image_url': 'https://s3-media2.fl.yelpcdn.com/bphoto/ZkUehuQR9xSIVEev4NuOlA/o.jpg', 'is_closed': False, 'url': 'https://www.yelp.com/biz/fairgrounds-coffee-and-tea-los-angeles-4?adjust_creative=4tJ3rKmvMI-m3JN0U29LHQ&utm_campaign=yelp_api_v3&utm_medium=api_v3_business_search&utm_source=4tJ3rKmvMI-m3JN0U29LHQ', 'review_count': 71, 'categories': [{'alias': 'coffee', 'title': 'Coffee & Tea'}], 'rating': 4.0, 'coordinates': {'latitude': 34.05181, 'longitude': -118.26785}, 'transactions': ['delivery'], 'price': '$$', 'location': {'address1': '1256 W 7th St', 'address2': None, 'address3': '', 'city': 'Los Angeles', 'zip_code': '90017', 'country': 'US', 'state': 'CA', 'display_address': ['1256 W 7th St', 'Los Angeles, CA 90017']}, 'phone': '+12133780382', 'display_phone': '(213) 378-0382', 'distance': 186.90388849037126}, {'id': 'Aohc9uWSAxILFev2TwiMVQ', 'alias': 'philz-coffee-los-angeles-15', 'name': 'Philz Coffee', 'image_url': 'https://s3-media3.fl.yelpcdn.com/bphoto/WRXaHT4T2tjp3QaO2kjtlA/o.jpg', 'is_closed': False, 'url': 'https://www.yelp.com/biz/philz-coffee-los-angeles-15?adjust_creative=4tJ3rKmvMI-m3JN0U29LHQ&utm_campaign=yelp_api_v3&utm_medium=api_v3_business_search&utm_source=4tJ3rKmvMI-m3JN0U29LHQ', 'review_count': 936, 'categories': [{'alias': 'coffee', 'title': 'Coffee & Tea'}, {'alias': 'breakfast_brunch', 'title': 'Breakfast & Brunch'}], 'rating': 4.5, 'coordinates': {'latitude': 34.0465343, 'longitude': -118.2592814}, 'transactions': [], 'price': '$', 'location': {'address1': '801 S Hope St', 'address2': 'Unit A', 'address3': '', 'city': 'Los Angeles', 'zip_code': '90017', 'country': 'US', 'state': 'CA', 'display_address': ['801 S Hope St', 'Unit A', 'Los Angeles, CA 90017']}, 'phone': '+12132132616', 'display_phone': '(213) 213-2616', 'distance': 781.6319481961642}, {'id': 'ABr1g2u9p-H-coNgwpHkUg', 'alias': 'brasil-kiss-coffeebar-los-angeles-3', 'name': 'Brasil Kiss Coffeebar', 'image_url': 'https://s3-media1.fl.yelpcdn.com/bphoto/PGq_K4CA1pBHNf6Vmo8C8A/o.jpg', 'is_closed': False, 'url': 'https://www.yelp.com/biz/brasil-kiss-coffeebar-los-angeles-3?adjust_creative=4tJ3rKmvMI-m3JN0U29LHQ&utm_campaign=yelp_api_v3&utm_medium=api_v3_business_search&utm_source=4tJ3rKmvMI-m3JN0U29LHQ', 'review_count': 252, 'categories': [{'alias': 'coffee', 'title': 'Coffee & Tea'}, {'alias': 'brazilian', 'title': 'Brazilian'}, {'alias': 'breakfast_brunch', 'title': 'Breakfast & Brunch'}], 'rating': 4.0, 'coordinates': {'latitude': 34.0519690715975, 'longitude': -118.262663157451}, 'transactions': ['delivery', 'pickup'], 'price': '$$', 'location': {'address1': '1010 Wilshire Blvd', 'address2': None, 'address3': '', 'city': 'Los Angeles', 'zip_code': '90017', 'country': 'US', 'state': 'CA', 'display_address': ['1010 Wilshire Blvd', 'Los Angeles, CA 90017']}, 'phone': '+12137855131', 'display_phone': '(213) 785-5131', 'distance': 297.22449992187734}], 'total': 38, 'region': {'center': {'longitude': -118.26576232910156, 'latitude': 34.051226417953856}}}
+{'businesses': [{'id': 'hERxbudMM_AjSfrDiaMowA', 'alias': 'fairgrounds-coffee-and-tea-los-angeles-4', 'name': 'Fairgrounds Coffee and Tea', 'image_url': 'https://s3-media2.fl.yelpcdn.com/bphoto/ZkUehuQR9xSIVEev4NuOlA/o.jpg', 'is_closed': False, 'url': 'https://www.yelp.com/biz/fairgrounds-coffee-and-tea-los-angeles-4?adjust_creative=4tJ3rKmvMI-m3JN0U29LHQ&utm_campaign=yelp_api_v3&utm_medium=api_v3_business_search&utm_source=4tJ3rKmvMI-m3JN0U29LHQ', 'review_count': 71, 'categories': [{'alias': 'coffee', 'title': 'Coffee & Tea'}], 'rating': 4.0, 'coordinates': {'latitude': 34.05181, 'longitude': -118.26785}, 'transactions': ['delivery'], 'price': '$$', 'location': {'address1': '1256 W 7th St', 'address2': None, 'address3': '', 'city': 'Los Angeles', 'zip_code': '90017', 'country': 'US', 'state': 'CA', 'display_address': ['1256 W 7th St', 'Los Angeles, CA 90017']}, 'phone': '+12133780382', 'display_phone': '(213) 378-0382', 'distance': 186.90388849037126}, {'id': 'Aohc9uWSAxILFev2TwiMVQ', 'alias': 'philz-coffee-los-angeles-15', 'name': 'Philz Coffee', 'image_url': 'https://s3-media3.fl.yelpcdn.com/bphoto/WRXaHT4T2tjp3QaO2kjtlA/o.jpg', 'is_closed': False, 'url': 'https://www.yelp.com/biz/philz-coffee-los-angeles-15?adjust_creative=4tJ3rKmvMI-m3JN0U29LHQ&utm_campaign=yelp_api_v3&utm_medium=api_v3_business_search&utm_source=4tJ3rKmvMI-m3JN0U29LHQ', 'review_count': 936, 'categories': [{'alias': 'coffee', 'title': 'Coffee & Tea'}, {'alias': 'breakfast_brunch', 'title': 'Breakfast & Brunch'}], 'rating': 4.5, 'coordinates': {'latitude': 34.0465343, 'longitude': -118.2592814}, 'transactions': [], 'price': '$', 'location': {'address1': '801 S Hope St', 'address2': 'Unit A', 'address3': '', 'city': 'Los Angeles', 'zip_code': '90017', 'country': 'US', 'state': 'CA', 'display_address': ['801 S Hope St', 'Unit A', 'Los Angeles, CA 90017']}, 'phone': '+12132132616', 'display_phone': '(213) 213-2616', 'distance': 781.6319481961642}, {'id': 'ABr1g2u9p-H-coNgwpHkUg', 'alias': 'brasil-kiss-coffeebar-los-angeles-3', 'name': 'Brasil Kiss Coffeebar', 'image_url': 'https://s3-media1.fl.yelpcdn.com/bphoto/PGq_K4CA1pBHNf6Vmo8C8A/o.jpg', 'is_closed': False, 'url': 'https://www.yelp.com/biz/brasil-kiss-coffeebar-los-angeles-3?adjust_creative=4tJ3rKmvMI-m3JN0U29LHQ&utm_campaign=yelp_api_v3&utm_medium=api_v3_business_search&utm_source=4tJ3rKmvMI-m3JN0U29LHQ', 'review_count': 252, 'categories': [{'alias': 'coffee', 'title': 'Coffee & Tea'}, {'alias': 'brazilian', 'title': 'Brazilian'}, {'alias': 'breakfast_brunch', 'title': 'Breakfast & Brunch'}], 'rating': 4.0, 'coordinates': {'latitude': 34.0519690715975, 'longitude': -118.262663157451}, 'transactions': ['deliverey', 'pickup'], 'price': '$$', 'location': {'address1': '1010 Wilshire Blvd', 'address2': None, 'address3': '', 'city': 'Los Angeles', 'zip_code': '90017', 'country': 'US', 'state': 'CA', 'display_address': ['1010 Wilshire Blvd', 'Los Angeles, CA 90017']}, 'phone': '+12137855131', 'display_phone': '(213) 785-5131', 'distance': 297.22449992187734}], 'total': 38, 'region': {'center': {'longitude': -118.26576232910156, 'latitude': 34.051226417953856}}}
 RM:  38 is the total results if there's no limit.
 '''
+print(type(data)) #print <class 'dict'>
+print(data["businesses"][0]["location"]) #print {'address1': '1256 W 7th St', 'address2': None, 'address3': '', 'city': 'Los Angeles', 'zip_code': '90017', 'country': 'US', 'state': 'CA', 'display_address': ['1256 W 7th St', 'Los Angeles, CA 90017']}
+print(data["businesses"][0]["location"]["display_address"]) #print ['1256 W 7th St', 'Los Angeles, CA 90017']
+#RM:  I don't understand the offset which used Numpy.
+print(data["total"]) #print 38
+resultsnumber = data["total"]
+listingslist = []
+for n in range(0, resultsnumber):
+    name = data["businesses"][n]["name"]
+    reviews = data["businesses"][n]["review_count"]
+    rating = data["businesses"][n]["rating"]
+    address = data["businesses"][n]["location"]["display_address"]
+    location = " ".join(address)
+    phone = data["businesses"][n]["display_phone"]
+    listingslist.append([name, reviews, rating, location, phone])
+print(listingslist) #print [['Fairgrounds Coffee and Tea', 71, 4.0, '1256 W 7th St Los Angeles, CA 90017', '(213) 378-0382'], ['Brasil Kiss Coffeebar', 252, 4.0, '1010 Wilshire Blvd Los Angeles, CA 90017', '(213) 785-5131'], ['Philz Coffee', 938, 4.5, '801 S Hope St Unit A Los Angeles, CA 90017', '(213) 213-2616'], ['Café WG', 31, 3.5, '900 Wilshire Blvd Ste 130 Los Angeles, CA 90017', '(213) 439-9025'], ['Kachi Deli Cafe & Grill', 280, 4.0, '1055 Wilshire Blvd Los Angeles, CA 90017', '(213) 482-4553'], ...]
+columnheader = ["Name", "Reviews", "Rating", "Address", "Phone"]
+pandadataframe = pd.DataFrame.from_records(listingslist, index="Name", columns=columnheader)
+print(f"Total Records: {len(pandadataframe)}") #print Total Records: 38
+print(pandadataframe.head())
+'''
+                            Reviews  ...           Phone
+Name                                 ...                
+Fairgrounds Coffee and Tea       71  ...  (213) 378-0382
+Brasil Kiss Coffeebar           252  ...  (213) 785-5131
+Philz Coffee                    938  ...  (213) 213-2616
+Café WG                          31  ...  (213) 439-9025
+Kachi Deli Cafe & Grill         280  ...  (213) 482-4553
+
+[5 rows x 4 columns]
+'''
+print(pandadataframe.info())
+'''
+<class 'pandas.core.frame.DataFrame'>
+Index: 38 entries, Fairgrounds Coffee and Tea to Locala
+Data columns (total 4 columns):
+Reviews    38 non-null int64
+Rating     38 non-null float64
+Address    38 non-null object
+Phone      38 non-null object
+dtypes: float64(1), int64(1), object(2)
+memory usage: 1.5+ KB
+None
+'''
+print(pandadataframe.describe())
+'''
+           Reviews     Rating
+count    38.000000  38.000000
+mean    242.710526   3.618421
+std     504.096725   0.720681
+min      12.000000   2.000000
+25%      46.250000   3.125000
+50%     111.000000   3.500000
+75%     244.750000   4.375000
+max    3042.000000   5.000000
+'''
+mostreviews = pandadataframe.sort_values(by="Reviews", ascending=False)
+print(mostreviews.head())
+'''
+                      Reviews  ...           Phone
+Name                           ...                
+Original Pantry Cafe     3042  ...  (213) 972-9279
+Philz Coffee              938  ...  (213) 213-2616
+Mendocino Farms           783  ...  (213) 430-9040
+Mad Men Burger            335  ...                
+Bodhi Bowl                305  ...  (213) 622-6560
+
+[5 rows x 4 columns]
+'''
+highestratings = pandadataframe.sort_values(by="Rating", ascending=False)
+print(highestratings.head())
+'''
+               Reviews  ...           Phone
+Name                    ...                
+The Burrow         272  ...  (213) 784-3050
+Locala              88  ...  (213) 632-1210
+SD Coffee           12  ...  (213) 263-2614
+Philz Coffee       938  ...  (213) 213-2616
+Cafe Teragram      285  ...  (213) 689-9103
+
+[5 rows x 4 columns]
+'''
+print(pandadataframe["Rating"].hist()) #print AxesSubplot(0.125,0.11;0.775x0.77)
+pandadataframe["Rating"].hist()
+pandadataframe["Reviews"].hist()
