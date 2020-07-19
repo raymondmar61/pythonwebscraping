@@ -1121,3 +1121,67 @@ Cafe Teragram      285  ...  (213) 689-9103
 print(pandadataframe["Rating"].hist()) #print AxesSubplot(0.125,0.11;0.775x0.77)
 pandadataframe["Rating"].hist()
 pandadataframe["Reviews"].hist()
+
+#BeautifulSoup 4 Python Web Scaping to CSV Excel File
+#https://stackoverflow.com/questions/47029280/python-3-add-custom-headers-to-urllib-request-request
+import urllib.request
+import csv
+from bs4 import BeautifulSoup
+url = "https://socialblade.com/youtube/top/50/mostviewed"
+opener = urllib.request.build_opener()
+opener.addheaders = [('User-agent', 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:78.0) Gecko/20100101 Firefox/78.0')]
+urllib.request.install_opener(opener)
+response = urllib.request.urlopen(url)
+soup = BeautifulSoup(response.read(), "html.parser")
+#print(soup)
+rows = soup.find("div", attrs={"style": "float: right; width: 900px;"}).find_all("div", recursive=False)[4:]
+#print(rows)
+'''
+[<div style="width: 860px; background: #fafafa; padding: 10px 20px; color:#444; font-size: 10pt; border-bottom: 1px solid #eee; line-height: 40px;">
+<div style="float: left; width: 50px; color:#888;">1st</div>
+<div style="float: left; width: 70px; font-size: 1.1em;">
+<span style="font-weight: bold; color:#00bee7;">A++</span> </div>
+<div style="float: left; width: 350px; line-height: 25px;">
+<img src="https://yt3.ggpht.com/a/AATXAJzOcyc2UwB0vlV7SyfzwgU_La1FOFZmObW3HCH0VzM=s88-c-k-c0xffffffff-no-rj-mo" style="height: 40px; width: 40px; vertical-align: middle; margin-right: 10px;"/>
+<a href="/youtube/c/tseriesmusic">T-Series</a>
+<sup><i aria-hidden="false" class="fa fa-music" style="color:#aaa; padding-left: 5px;" title="Category: music"></i></sup>
+</div>
+<div style="float: left; width: 80px;"><span style="color:#555;">14,534</span></div>
+<div style="float: left; width: 150px;">
+                146M            </div>
+<div style="float: left; width: 150px;">
+<span style="color:#555;">116,330,142,642</span> </div>
+<div style="clear: both;"></div></div>, <div style="width: 860px; background: #f8f8f8;; padding: 10px 20px; color:#444; font-size: 10pt; border-bottom: 1px solid #eee; line-height: 40px;">
+<div style="float: left; width: 50px; color:#888;">2nd</div>
+<div style="float: left; width: 70px; font-size: 1.1em;">
+<span style="font-weight: bold; color:#00bee7;">A++</span> </div>
+<div style="float: left; width: 350px; line-height: 25px;">
+<img src="https://yt3.ggpht.com/a/AATXAJyQ9bFPnnofMf58cJZPfFHaHZXqLfFm-RW7eC6JXQ=s88-c-k-c0xffffffff-no-rj-mo" style="height: 40px; width: 40px; vertical-align: middle; margin-right: 10px;"/>
+<a href="/youtube/c/cocomelon">Cocomelon - Nursery Rhymes</a>
+<sup><i aria-hidden="false" class="fa fa-graduation-cap" style="color:#aaa; padding-left: 5px;" title="Category: education"></i></sup>
+</div>
+<div style="float: left; width: 80px;"><span style="color:#555;">546</span></div>
+<div style="float: left; width: 150px;">
+                88.4M            </div>
+<div style="float: left; width: 150px;">
+<span style="color:#555;">70,142,668,168</span> </div>
+<div style="clear: both;"></div></div>, <div style="width: 860px; background: #fafafa; padding: 10px 20px; color:#444; font-size: 10pt; border-bottom: 1px solid #eee; line-height: 40px;">
+<div style="float: left; width: 50px; color:#888;">3rd</div>
+<div style="float: left; width: 70px; font-size: 1.1em;">
+<span style="font-weight: bold; color:#00bee7;">A++</span> </div>
+<div style="float: left; width: 350px; line-height: 25px;">
+<img src="https://yt3.ggpht.com/a/AATXAJxfoPS0uPI-1MQrz0QxcgcPJVtnGcemE8N6NtF7gA=s88-c-k-c0xffffffff-no-rj-mo" style="height: 40px; width: 40px; vertical-align: middle; margin-right: 10px;"/>
+<a href="/youtube/c/set-india">SET India</a>
+...
+'''
+file = open("topyoutubers.csv", "w")
+writer = csv.writer(file)
+writer.writerow(["Username", "Uploads", "Views"])
+for eachrow in rows:
+    username = eachrow.find("a").text.strip()
+    numbers = eachrow.findAll("span", attrs={"style": "color:#555;"})
+    uploads = numbers[0].text.strip()
+    views = numbers[1].text.strip()
+    print(username + " " + uploads + " " + views) #print T-Series 14,534 116,330,142,642
+    writer.writerow([username.encode("utf-8"), uploads.encode("utf-8"), views.encode("utf-8")])
+file.close()
