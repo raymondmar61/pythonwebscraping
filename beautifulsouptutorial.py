@@ -1185,3 +1185,124 @@ for eachrow in rows:
     print(username + " " + uploads + " " + views) #print T-Series 14,534 116,330,142,642
     writer.writerow([username.encode("utf-8"), uploads.encode("utf-8"), views.encode("utf-8")])
 file.close()
+
+#Python Tutorial Web Scraping with BeautifulSoup and Requests
+from bs4 import BeautifulSoup
+import requests
+import csv
+#Pass HTML webpage as a file
+with open("filename.html", "r") as htmlfile:
+    soup = BeautifulSoup(htmlfile, "lxml")  #lxml is the parser
+#print(soup) #print html in filename.html
+#print(soup.prettify()) #print html in filename.html with indentation
+title = soup.title
+print(title) #print <title>Test - A Sample Website</title>
+print(title.text) #print Test - A Sample Website
+firstdivtag = soup.div
+print(firstdivtag)
+'''
+<div class="article">
+<h2><a href="article_1.html">Article 1 Headline</a></h2>
+<p>This is a summary of article 1</p>
+</div>
+'''
+finddivtag = soup.find("div")
+print(finddivtag)
+'''
+<div class="article">
+<h2><a href="article_1.html">Article 1 Headline</a></h2>
+<p>This is a summary of article 1</p>
+</div>
+'''
+finddivtagclassfooter = soup.find("div", {"class": "footer"}) #or , class_:"footer"
+print(finddivtagclassfooter)
+'''
+<div class="footer">
+<p>Footer Information</p>
+</div>
+'''
+finddivtagarticle = soup.find("div", class_="article")
+print(finddivtagarticle)
+'''
+<div class="article">
+<h2><a href="article_1.html">Article 1 Headline</a></h2>
+<p>This is a summary of article 1</p>
+</div>
+'''
+headline = finddivtagarticle.h2.a
+print(headline) #print <a href="article_1.html">Article 1 Headline</a>
+print(headline.text) #print Article 1 Headline
+headlinemultiplefind = soup.find("div", class_="article").find("h2").find("a")
+print(headlinemultiplefind) #print <a href="article_1.html">Article 1 Headline</a>
+headlinemultiplefindtext = soup.find("div", class_="article").find("h2").find("a").text
+print(headlinemultiplefindtext) #print Article 1 Headline
+summary = soup.find("div", class_="article").find("p")
+print(summary) #print <p>This is a summary of article 1</p>
+findalldivtagarticle = soup.findAll("div", class_="article")
+print(findalldivtagarticle) #print [<div class="article"> <h2><a href="article_1.html">Article 1 Headline</a></h2> <p>This is a summary of article 1</p> </div>, <div class="article"> <h2><a href="article_2.html">Article 2 Headline</a></h2> <p>This is a summary of article 2</p> </div>]
+for eacharticle in findalldivtagarticle:
+    headline = eacharticle.h2.a.text
+    print(headline) #print Article 1 Headline
+    summary = eacharticle.find("p").text
+    print(summary) #print This is a summary of article 1
+#Pass HTML webpage as an object
+source = requests.get("https://coreyms.com/").text
+soup = BeautifulSoup(source, "lxml")
+#print(soup.prettify()) #prints webpage
+article = soup.find("article")
+#print(article.prettify())
+headlinecorey = article.h2.a.text
+print(headlinecorey) #print Python Tutorial: Zip Files – Creating and Extracting Zip Archives
+summarycorey = article.find("div", class_="entry-content")
+print(summarycorey)
+'''
+<div class="entry-content" itemprop="text">
+<p>In this video, we will be learning how to create and extract zip archives. We will start by using the zipfile module, and then we will see how to do this using the shutil module. We will learn how to do this with single files and directories, as well as learning how to use gzip as well. Let’s get started…<br/></p>
+<span class="embed-youtube" style="text-align:center; display: block;"><iframe allowfullscreen="true" class="youtube-player" height="360" src="https://www.youtube.com/embed/z0gguhEmWiY?version=3&amp;rel=1&amp;fs=1&amp;autohide=2&amp;showsearch=0&amp;showinfo=1&amp;iv_load_policy=1&amp;wmode=transparent" style="border:0;" width="640"></iframe></span>
+</div>
+'''
+print(summarycorey.p.text) #print In this video, we will be learning how to create and extract zip archives. We will start by using the zipfile module, and then we will see how to do this using the shutil module. We will learn how to do this with single files and directories, as well as learning how to use gzip as well. Let’s get started…
+print(summarycorey.text) #print In this video, we will be learning how to create and extract zip archives. We will start by using the zipfile module, and then we will see how to do this using the shutil module. We will learn how to do this with single files and directories, as well as learning how to use gzip as well. Let’s get started…
+videosource = article.find("span", class_="embed-youtube")
+print(videosource)
+'''
+  <span class="embed-youtube" style="text-align:center; display: block;">
+   <iframe allowfullscreen="true" class="youtube-player" height="360" src="https://www.youtube.com/embed/z0gguhEmWiY?version=3&amp;rel=1&amp;fs=1&amp;autohide=2&amp;showsearch=0&amp;showinfo=1&amp;iv_load_policy=1&amp;wmode=transparent" style="border:0;" width="640">
+   </iframe>
+  </span>
+'''
+videosource = article.find("iframe", class_="youtube-player")
+print(videosource)
+'''
+<iframe allowfullscreen="true" class="youtube-player" height="360" src="https://www.youtube.com/embed/z0gguhEmWiY?version=3&amp;rel=1&amp;fs=1&amp;autohide=2&amp;showsearch=0&amp;showinfo=1&amp;iv_load_policy=1&amp;wmode=transparent" style="border:0;" width="640"></iframe>
+'''
+print(type(videosource)) #print <class 'bs4.element.Tag'>
+print(videosource["src"]) #print https://www.youtube.com/embed/z0gguhEmWiY?version=3&rel=1&fs=1&autohide=2&showsearch=0&showinfo=1&iv_load_policy=1&wmode=transparent
+print(type(videosource["src"])) #print <class 'str'>
+print(videosource["src"].find("?")) #print 41
+videosourceurl = videosource["src"]
+videosourceurl = videosourceurl.replace("embed", "watch")
+print(videosourceurl[0:videosource["src"].find("?")]) #print https://www.youtube.com/embed/z0gguhEmWiY
+print("\n")
+allarticles = soup.findAll("article")
+csvfile = open("coreymsscrape.csv", "w")
+csvwriter = csv.writer(csvfile)
+csvwriter.writerow(["headline", "summary", "video link"]) #csv headers
+for eachallarticles in allarticles:
+    headlinecorey = eachallarticles.h2.a.text
+    print(headlinecorey) #print Python Tutorial: Zip Files – Creating and Extracting Zip Archives
+    summarycorey = eachallarticles.find("div", class_="entry-content")
+    summarycorey = summarycorey.p.text
+    print(summarycorey) #print In this video, we will be learning how to create and extract zip archives. We will start by using the zipfile module, and then we will see how to do this using the shutil module. We will learn how to do this with single files and directories, as well as learning how to use gzip as well. Let’s get started…
+    videosource = eachallarticles.find("iframe", class_="youtube-player")
+    try:
+        print(videosource["src"].find("?")) #print 41
+        videosourceurl = videosource["src"]
+        videosourceurl = videosourceurl.replace("embed", "watch")
+        videosourceurl = videosourceurl[0:videosource["src"].find("?")]
+        print(videosourceurl)
+        #print(videosourceurl[0:videosource["src"].find("?")]) #print https://www.youtube.com/embed/z0gguhEmWiY
+    except TypeError:
+        videosourceurl = None
+    csvwriter.writerow([headlinecorey, summarycorey, videosourceurl])
+csvfile.close()
