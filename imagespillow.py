@@ -107,3 +107,34 @@ import requests
 from io import BytesIO
 response = requests.get(url)
 img = Image.open(BytesIO(response.content))
+
+#Get image size (width, height) with Python, OpenCV, Pillow (PIL) _ note.nkmk.me.pdf
+#OpenCV image width and image height obtained as a tuple with the attribute shape of NumpPy array ndarray or ndarray.shape.  The width and height can be acquired by the attribute shape indicating the shape of ndarray.
+#PIL.Image image width and image height obtained with attribute size, width, and height
+
+import cv2
+imagepic = cv2.imread("campbellpd.jpg")
+print(type(imagepic)) #print <class 'numpy.ndarray'>
+print(imagepic.shape) #print (1200, 1600, 3)  #RM:  height, width, color(3) which is channel I don't know what channel means
+print(type(imagepic.shape)) #print <class 'tuple'>
+print((imagepic.shape)[0]) #print 1200
+width = imagepic.shape[1]
+print(width) #print 1600
+imageheight, imagewidth, _ = imagepic.shape
+print("width", imagewidth, "height", imageheight)
+print(imagepic.shape[1::-1]) #print (1600, 1200)
+imagegrayscale = cv2.imread("campbellpdblackandwhite.jpg", cv2.IMREAD_GRAYSCALE) #RM:  IMREAD_GRAYSCALE must be caps
+print(imagegrayscale.shape) #print (1200, 1600)
+print(type(imagegrayscale.shape)) #print <class 'tuple'>
+print("\n")
+
+from PIL import Image
+imagepillowpic = Image.open("campbellpd.jpg")
+print(imagepillowpic.size) #print (1600, 1200)
+print(type(imagepillowpic.size)) #print <class 'tuple'>
+imagepillowpicwidth, imagepillpwpicheight = imagepillowpic.size
+print("width pillow", imagepillowpicwidth) #print width pillow 1600
+print("height pillow", imagepillpwpicheight) #print height pillow 1200
+imagepillowpicgrayscale = Image.open("campbellpd.jpg").convert("L")
+print(imagepillowpicgrayscale.size) #print (1600, 1200)
+print(type(imagepillowpicgrayscale.size)) #print <class 'tuple'>
