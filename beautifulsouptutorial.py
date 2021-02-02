@@ -1306,3 +1306,12 @@ for eachallarticles in allarticles:
         videosourceurl = None
     csvwriter.writerow([headlinecorey, summarycorey, videosourceurl])
 csvfile.close()
+
+from selenium import webdriver
+driver = webdriver.Firefox()
+driver.get("https://www.innovateinfinitely.com")
+#RM  Browser is under remote control message appears
+print(driver.current_url) #print https://innovateinfinitely.com/
+#RM:  the single webbrowser replaced the url from https://www.innovateinfinitely.com/ to https://innovateinfinitely.com/
+driver.get("https://innovateinfinitely.com")
+print(driver.current_url) #print https://innovateinfinitely.com/
