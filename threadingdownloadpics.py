@@ -53,3 +53,32 @@ with concurrent.futures.ThreadPoolExecutor() as executor:
 finish = time.perf_counter()
 print(f"Finished in {round(finish-start,2)} second(s).") #print Finished in 18.94 second(s).  RM:  without time.sleep(3) is 4.05 second(s).
 
+import threading
+import requests
+from bs4 import BeautifulSoup
+from urllib.request import urlopen
+import time
+
+def downloadimages(imageurl, n):
+    imagename = str(n) + imageurl[57:]
+    print(imagename)
+    with open(imagename, "wb") as imagefile:
+        imagefile.write(urlopen(imageurl).read())
+
+
+start = time.perf_counter()
+mainwebpage = "https://innovateinfinitely.com/"
+page = requests.get(mainwebpage + "myphotoalbum.html")
+soup = BeautifulSoup(page.content, "html.parser")
+imageurlist = []
+individualpics = soup.findAll("td", {"id": "picture"})
+for eachindividualpics in individualpics:
+    eachindividualpicsurls = eachindividualpics.findAll("a")[1]["href"]
+    imageurl = mainwebpage + eachindividualpicsurls
+    imageurlist.append(imageurl)
+printnumber = 1
+for eachimageurlist in imageurlist:
+    threading.Thread(target=downloadimages, args=(eachimageurlist, printnumber)).start()
+    printnumber += 1
+finish = time.perf_counter()
+print(f"Finished in {round(finish-start,2)} second(s).") #print Finished in 0.35 second(s).
